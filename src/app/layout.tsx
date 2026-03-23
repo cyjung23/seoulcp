@@ -1,22 +1,18 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Noto_Sans_KR } from "next/font/google";
 import Link from "next/link";
 import "./globals.css";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+const notoSansKR = Noto_Sans_KR({
+  variable: "--font-noto-sans-kr",
   subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
+  weight: ["400", "700", "900"],
 });
 
 export const metadata: Metadata = {
   title: "ABC Seoul — 서울 미용클리닉 검색",
   description:
-    "피부 고민별로 서울 미용클리닉, 시술, 장비를 검색하세요. 14개 클리닉, 146개 장비, 283가지 시술 정보를 제공합니다.",
+    "피부 고민별로 서울 미용클리닉, 시술, 장비를 검색하세요. 서울 미용·피부·성형 클리닉 검색 플랫폼.",
 };
 
 export default function RootLayout({
@@ -27,14 +23,17 @@ export default function RootLayout({
   return (
     <html
       lang="ko"
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
+      className={`${notoSansKR.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col bg-white text-gray-900">
+      <body className="min-h-full flex flex-col bg-white text-gray-900 font-[var(--font-noto-sans-kr)]">
         {/* 글로벌 네비게이션 */}
         <nav className="bg-gray-900 text-white border-b border-gray-800">
           <div className="max-w-6xl mx-auto px-6 py-3 flex items-center justify-between">
             <Link href="/" className="text-lg font-bold tracking-tight">
-              ABC Seoul
+              <span className="text-[#22d3ee]">A</span>
+              <span className="text-[#fb37a3]">B</span>
+              <span className="text-[#facc15]">C</span>
+              <span className="text-[#a3e635]"> Seoul</span>
             </Link>
             <div className="flex gap-6 text-sm">
               <Link href="/" className="hover:text-gray-300 transition">
@@ -62,7 +61,7 @@ export default function RootLayout({
         {/* 푸터 */}
         <footer className="bg-gray-50 border-t text-gray-500 text-xs py-6 px-6">
           <div className="max-w-6xl mx-auto text-center">
-            © 2026 ABC Seoul. 서울 미용클리닉 검색 플랫폼.
+            © 2026 ABC Seoul. 서울 미용·피부·성형 클리닉 검색 플랫폼.
           </div>
         </footer>
       </body>

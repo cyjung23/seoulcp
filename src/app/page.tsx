@@ -138,8 +138,8 @@ export default async function Home() {
     <div className="min-h-screen">
       {/* 히어로 섹션 */}
       <header className="bg-gray-900 text-white py-14 px-6 text-center">
-        <h1 className="text-4xl font-bold tracking-tight">ABC Seoul</h1>
-        <p className="text-gray-400 mt-2 text-lg">
+        <h1 className="text-3xl font-bold tracking-tight"><span className="text-[#22d3ee]">A</span><span>ll </span><span className="text-[#fb37a3]">B</span><span>eauty </span><span className="text-[#facc15]">C</span><span>linic </span><span className="text-[#a3e635]">Seoul</span></h1>
+        <p className="text-gray-400 mt-2 text-sm tracking-wide">서울 미용·피부·성형 클리닉 검색 플랫폼</p><p className="text-gray-300 mt-3 text-lg">
           어떤 고민이 있으신가요?
         </p>
         <div className="mt-5 px-4">
