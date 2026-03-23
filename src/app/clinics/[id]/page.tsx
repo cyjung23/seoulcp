@@ -59,7 +59,7 @@ export default async function ClinicDetailPage({
   const treatmentCategories = [...new Set(treatments.map((t: any) => t.category_ko || "기타"))].sort();
 
   return (
-    <main className="min-h-screen bg-white">
+    <div className="min-h-screen">
       <header className="bg-gray-900 text-white py-10 px-6">
         <div className="max-w-5xl mx-auto">
           <Link href="/clinics" className="text-gray-400 hover:text-white text-sm">
@@ -160,6 +160,6 @@ export default async function ClinicDetailPage({
           </div>
         )}
       </section>
-    </main>
+    </div>
   );
 }

@@ -12,7 +12,7 @@ async function getData(slug: string) {
 
   const { data: concern } = await supabase
     .from("concerns")
-    .select("*")
+    .select("*, concern_group_ko, concern_group_en")
     .eq("name_ko", concernName)
     .single();
 
@@ -28,7 +28,7 @@ async function getData(slug: string) {
     .map((r: any) => r.treatments)
     .filter(Boolean);
 
-  // 각 시술을 제공하는 클리닉 수를 한번에 조회
+  // 각 시술을 제공하는 클리닉 수
   const treatmentIds = treatments.map((t: any) => t.id);
 
   const { data: clinicRelations } = await supabase
@@ -42,7 +42,9 @@ async function getData(slug: string) {
   });
 
   // 관련 클리닉 목록 (중복 제거)
-  const uniqueClinicIds = [...new Set((clinicRelations || []).map((r) => r.clinic_id))];
+  const uniqueClinicIds = [
+    ...new Set((clinicRelations || []).map((r) => r.clinic_id)),
+  ];
 
   let clinics: any[] = [];
   if (uniqueClinicIds.length > 0) {
@@ -76,14 +78,48 @@ export default async function ConcernDetailPage({
   const { concern, treatments, clinics } = data;
 
   return (
-    <main className="min-h-screen bg-white">
+    <div className="min-h-screen">
       <header className="bg-gray-900 text-white py-10 px-6">
         <div className="max-w-5xl mx-auto">
-          <Link href="/concerns" className="text-gray-400 hover:text-white text-sm">
-            ← 고민 목록
-          </Link>
-          <h1 className="text-3xl font-bold mt-2">{concern.name_ko}</h1>
+          {/* 브레드크럼: Home → 카테고리 → 현재 고민 */}
+          <div className="flex items-center gap-2 text-sm text-gray-400">
+            <Link href="/" className="hover:text-white transition">
+              Home
+            </Link>
+            <span>/</span>
+            {concern.concern_group_ko ? (
+              <>
+                <Link
+                  href={`/concerns?category=${encodeURIComponent(
+                    concern.concern_group_ko
+                  )}`}
+                  className="hover:text-white transition"
+                >
+                  {concern.concern_group_ko}
+                </Link>
+                <span>/</span>
+              </>
+            ) : (
+              <>
+                <Link
+                  href="/concerns"
+                  className="hover:text-white transition"
+                >
+                  고민
+                </Link>
+                <span>/</span>
+              </>
+            )}
+            <span className="text-gray-300">{concern.name_ko}</span>
+          </div>
+
+          <h1 className="text-3xl font-bold mt-3">{concern.name_ko}</h1>
           <p className="text-gray-400 mt-1">{concern.name_en}</p>
+          {concern.concern_group_ko && (
+            <span className="inline-block bg-gray-700 text-gray-300 px-3 py-1 rounded-full text-xs mt-3">
+              {concern.concern_group_ko} · {concern.concern_group_en}
+            </span>
+          )}
         </div>
       </header>
 
@@ -92,24 +128,30 @@ export default async function ConcernDetailPage({
         <h2 className="text-xl font-bold mb-4">
           관련 시술 ({treatments.length})
         </h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-10">
-          {treatments.map((t: any) => (
-            <Link
-              key={t.id}
-              href={`/treatments/${encodeURIComponent(t.name_ko)}`}
-              className="border rounded-lg p-4 hover:shadow-md transition block"
-            >
-              <h3 className="font-bold text-lg">{t.name_ko}</h3>
-              <p className="text-gray-500 text-sm">{t.name_en}</p>
-              <span className="inline-block bg-gray-100 text-gray-600 px-2 py-0.5 rounded text-xs mt-2">
-                {t.category_ko}
-              </span>
-              <p className="text-green-600 font-semibold mt-2">
-                {t.clinicCount} clinic{t.clinicCount > 1 ? "s" : ""}
-              </p>
-            </Link>
-          ))}
-        </div>
+        {treatments.length > 0 ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-10">
+            {treatments.map((t: any) => (
+              <Link
+                key={t.id}
+                href={`/treatments/${encodeURIComponent(t.name_ko)}`}
+                className="border rounded-lg p-4 hover:shadow-md transition block"
+              >
+                <h3 className="font-bold text-lg">{t.name_ko}</h3>
+                <p className="text-gray-500 text-sm">{t.name_en}</p>
+                <span className="inline-block bg-gray-100 text-gray-600 px-2 py-0.5 rounded text-xs mt-2">
+                  {t.category_ko}
+                </span>
+                <p className="text-green-600 font-semibold mt-2">
+                  {t.clinicCount} clinic{t.clinicCount !== 1 ? "s" : ""}
+                </p>
+              </Link>
+            ))}
+          </div>
+        ) : (
+          <p className="text-gray-500 mb-10">
+            아직 연결된 시술이 없습니다.
+          </p>
+        )}
 
         {/* 관련 클리닉 */}
         {clinics.length > 0 && (
@@ -127,10 +169,14 @@ export default async function ConcernDetailPage({
                   <h3 className="font-bold text-lg">{c.name_ko}</h3>
                   <p className="text-gray-500 text-sm">{c.name_en}</p>
                   {c.address_ko && (
-                    <p className="text-gray-600 text-sm mt-2">📍 {c.address_ko}</p>
+                    <p className="text-gray-600 text-sm mt-2">
+                      📍 {c.address_ko}
+                    </p>
                   )}
                   {c.phone && (
-                    <p className="text-gray-600 text-sm mt-1">📞 {c.phone}</p>
+                    <p className="text-gray-600 text-sm mt-1">
+                      📞 {c.phone}
+                    </p>
                   )}
                 </Link>
               ))}
@@ -138,6 +184,6 @@ export default async function ConcernDetailPage({
           </>
         )}
       </section>
-    </main>
+    </div>
   );
 }

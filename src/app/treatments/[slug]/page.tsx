@@ -58,7 +58,7 @@ export default async function TreatmentDetailPage({
   const { treatment, clinics, concerns, bodyParts } = data;
 
   return (
-    <main className="min-h-screen bg-white">
+    <div className="min-h-screen">
       <header className="bg-gray-900 text-white py-10 px-6">
         <div className="max-w-5xl mx-auto">
           <Link href="/treatments" className="text-gray-400 hover:text-white text-sm">
@@ -136,6 +136,6 @@ export default async function TreatmentDetailPage({
           ))}
         </div>
       </section>
-    </main>
+    </div>
   );
 }
