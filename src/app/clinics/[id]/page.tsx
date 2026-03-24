@@ -30,7 +30,6 @@ async function getData(id: number) {
     )
     .eq("clinic_id", id);
 
-  // 표준 시술 목록 조회
   const { data: standards } = await supabase
     .from("standard_treatments")
     .select("id, name_ko, name_en, category_ko, category_order, sort_order")
@@ -40,7 +39,6 @@ async function getData(id: number) {
   const standardMap = new Map<string, any>();
   (standards || []).forEach((s) => standardMap.set(s.id, s));
 
-  // 시술에 표준 시술 정보 연결
   const treatments = (treatmentRows || [])
     .map((r: any) => {
       if (!r.treatments?.id) return null;
@@ -66,11 +64,29 @@ async function getData(id: number) {
     .select("*, doctor_specialties(*)")
     .eq("clinic_id", id);
 
+  // 대표원장 선택 + specialties 추출
+  let directorSpecialties: string[] = [];
+  const sortedDocs = [...(doctors || [])].sort((a, b) => {
+    const aD = a.title_ko?.includes("대표") ? 0 : 1;
+    const bD = b.title_ko?.includes("대표") ? 0 : 1;
+    return aD - bD;
+  });
+
+  if (sortedDocs.length > 0) {
+    const director = sortedDocs.find((d) => d.title_ko?.includes("원장"));
+    if (director && director.doctor_specialties?.length > 0) {
+      directorSpecialties = director.doctor_specialties.map(
+        (s: any) => s.specialty_ko
+      );
+    }
+  }
+
   return {
     clinic,
     devices: (deviceRows || []).map((r: any) => r.devices).filter(Boolean),
     treatments,
     doctors: doctors || [],
+    directorSpecialties,
   };
 }
 
@@ -84,22 +100,21 @@ export default async function ClinicDetailPage({
 
   if (!data) return notFound();
 
-  const { clinic, devices, treatments, doctors } = data;
+  const { clinic, devices, treatments, doctors, directorSpecialties } = data;
 
   const deviceCategories = [
     ...new Set(devices.map((d: any) => d.category_ko || "기타")),
   ].sort();
 
-  // 표준 카테고리 순서로 정렬
   const treatmentCategories = [
     ...new Set(treatments.map((t: any) => t.standard_category_ko)),
   ].sort((a, b) => {
-    const orderA = treatments.find(
-      (t: any) => t.standard_category_ko === a
-    )?.category_order ?? 999;
-    const orderB = treatments.find(
-      (t: any) => t.standard_category_ko === b
-    )?.category_order ?? 999;
+    const orderA =
+      treatments.find((t: any) => t.standard_category_ko === a)
+        ?.category_order ?? 999;
+    const orderB =
+      treatments.find((t: any) => t.standard_category_ko === b)
+        ?.category_order ?? 999;
     return orderA - orderB;
   });
 
@@ -119,7 +134,7 @@ export default async function ClinicDetailPage({
       </header>
 
       <section className="max-w-5xl mx-auto py-8 px-6">
-        {/* 기본 정보 */}
+        {/* 기본 정보 + 원장 specialties */}
         <div className="border rounded-xl p-6 mb-8">
           <h2 className="text-xl font-bold mb-4">기본 정보</h2>
           {clinic.address_ko && (
@@ -140,6 +155,20 @@ export default async function ClinicDetailPage({
             >
               🌐 {clinic.website}
             </a>
+          )}
+
+          {/* 원장 specialties 태그 */}
+          {directorSpecialties.length > 0 && (
+            <div className="flex flex-wrap gap-2 mt-4 pt-4 border-t">
+              {directorSpecialties.map((spec, i) => (
+                <span
+                  key={i}
+                  className="bg-cyan-50 text-cyan-700 px-3 py-1 rounded-full text-sm font-medium"
+                >
+                  {spec}
+                </span>
+              ))}
+            </div>
           )}
         </div>
 
@@ -211,7 +240,7 @@ export default async function ClinicDetailPage({
           </div>
         )}
 
-        {/* 의사 */}
+        {/* 의료진 — 이름과 직위만 표시 */}
         {doctors.length > 0 && (
           <div className="mb-8">
             <h2 className="text-xl font-bold mb-4">
@@ -223,20 +252,6 @@ export default async function ClinicDetailPage({
                   <p className="font-bold">{doc.name_ko}</p>
                   <p className="text-gray-500 text-sm">{doc.name_en}</p>
                   <p className="text-gray-600 text-sm mt-1">{doc.title_ko}</p>
-                  {doc.doctor_specialties?.length > 0 && (
-                    <div className="flex flex-wrap gap-1 mt-2">
-                      {doc.doctor_specialties.map(
-                        (s: any, idx: number) => (
-                          <span
-                            key={idx}
-                            className="bg-purple-50 text-purple-700 px-2 py-0.5 rounded text-xs"
-                          >
-                            {s.specialty_ko}
-                          </span>
-                        )
-                      )}
-                    </div>
-                  )}
                 </div>
               ))}
             </div>
