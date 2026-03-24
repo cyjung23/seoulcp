@@ -10,9 +10,36 @@ const notoSansKR = Noto_Sans_KR({
 });
 
 export const metadata: Metadata = {
-  title: "ABC Seoul — 서울 미용클리닉 검색",
+  title: {
+    default: "ABC Seoul — 서울 미용·피부·성형 클리닉 검색 플랫폼",
+    template: "%s | ABC Seoul",
+  },
   description:
-    "피부 고민별로 서울 미용클리닉, 시술, 장비를 검색하세요. 서울 미용·피부·성형 클리닉 검색 플랫폼.",
+    "서울 미용클리닉의 시술, 장비, 의사 정보를 고민별로 검색하세요. All Beauty Clinic Seoul — 주름, 체형, 색소, 여드름 등 피부·성형 고민을 해결할 클리닉을 찾아드립니다.",
+  keywords: [
+    "서울 미용클리닉",
+    "피부과",
+    "성형외과",
+    "미용시술",
+    "피부고민",
+    "Seoul beauty clinic",
+    "Korean aesthetic clinic",
+    "K-beauty clinic",
+  ],
+  openGraph: {
+    title: "ABC Seoul — 서울 미용·피부·성형 클리닉 검색 플랫폼",
+    description:
+      "고민별로 서울 미용클리닉, 시술, 장비를 검색하세요. All Beauty Clinic Seoul.",
+    url: "https://abcseoul.vercel.app",
+    siteName: "ABC Seoul",
+    locale: "ko_KR",
+    type: "website",
+  },
+  robots: {
+    index: false,
+    follow: false,
+  },
+  metadataBase: new URL("https://abcseoul.vercel.app"),
 };
 
 export default function RootLayout({
