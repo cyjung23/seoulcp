@@ -7,44 +7,54 @@ async function getData() {
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
   );
 
+  // 클리닉
   const { data: clinics } = await supabase
     .from("clinics")
     .select("*")
     .order("name_ko");
 
+  // 표준 시술
   const { data: standards } = await supabase
     .from("standard_treatments")
-    .select("id, category_ko, category_order")
+    .select("id, name_ko, category_ko, category_order")
     .order("category_order");
 
+  // 카테고리 목록
   const categorySet = new Map<string, number>();
-  (standards || []).forEach((s) => {
+  (standards || []).forEach((s: any) => {
     if (!categorySet.has(s.category_ko)) {
       categorySet.set(s.category_ko, s.category_order);
     }
   });
   const categoryNames = Array.from(categorySet.keys());
 
+  // 시술 목록
   const { data: allTreatments } = await supabase
     .from("treatments")
-    .select("id, standard_treatment_id");
+    .select("id, name_ko, standard_treatment_id");
 
+  // 클리닉-시술 매핑
   const { data: allClinicTreatments } = await supabase
     .from("clinic_treatments")
     .select("clinic_id, treatment_id");
 
+  // treatment id → standard_treatment_id
   const treatmentToStdId: Record<number, string> = {};
+  const treatmentToName: Record<number, string> = {};
   (allTreatments || []).forEach((t: any) => {
+    treatmentToName[t.id] = t.name_ko;
     if (t.standard_treatment_id) {
       treatmentToStdId[t.id] = t.standard_treatment_id;
     }
   });
 
+  // standard_treatment id → category
   const stdIdToCategory: Record<string, string> = {};
   (standards || []).forEach((s: any) => {
     stdIdToCategory[s.id] = s.category_ko;
   });
 
+  // 카테고리 필터용 매핑
   const categoryMap: Record<string, Set<number>> = {};
   (allClinicTreatments || []).forEach((ct: any) => {
     const stdId = treatmentToStdId[ct.treatment_id];
@@ -57,13 +67,13 @@ async function getData() {
     }
   });
 
-  // 카테고리별 보유 클리닉 수 (희소성 계산)
+  // 카테고리별 보유 클리닉 수 (희소성 정렬용)
   const categoryClinicCount: Record<string, number> = {};
   Object.entries(categoryMap).forEach(([cat, clinicSet]) => {
     categoryClinicCount[cat] = clinicSet.size;
   });
 
-  // clinic_specialties 조회
+  // clinic_specialties
   const { data: clinicSpecs } = await supabase
     .from("clinic_specialties")
     .select("clinic_id, specialty_ko");
@@ -76,7 +86,7 @@ async function getData() {
     }
   });
 
-  // 희소성 기반 정렬: 보유 클리닉 적은 순 → 앞에 배치
+  // 희소성 기준 정렬
   Object.keys(clinicSpecMap).forEach((cid) => {
     clinicSpecMap[Number(cid)].sort((a, b) => {
       const countA = categoryClinicCount[a] || 999;
@@ -85,13 +95,28 @@ async function getData() {
     });
   });
 
-  const clinicsWithInfo = (clinics || []).map((c) => ({
+  // 클리닉별 개별 시술명 목록
+  const clinicTreatmentNames: Record<number, string[]> = {};
+  (allClinicTreatments || []).forEach((ct: any) => {
+    const name = treatmentToName[ct.treatment_id];
+    if (name) {
+      if (!clinicTreatmentNames[ct.clinic_id]) clinicTreatmentNames[ct.clinic_id] = [];
+      if (!clinicTreatmentNames[ct.clinic_id].includes(name)) {
+        clinicTreatmentNames[ct.clinic_id].push(name);
+      }
+    }
+  });
+
+  // 클리닉 정보 조합
+  const clinicsWithInfo = (clinics || []).map((c: any) => ({
     ...c,
     specialties: clinicSpecMap[c.id] || [],
+    treatmentNames: (clinicTreatmentNames[c.id] || []).sort(),
   }));
 
+  // 지역 필터
   const districtSet = new Set<string>();
-  (clinics || []).forEach((c) => {
+  (clinics || []).forEach((c: any) => {
     if (c.district_ko) districtSet.add(c.district_ko.split(" ")[0]);
   });
 
@@ -123,7 +148,7 @@ export default async function ClinicsPage({
   let filtered = clinics;
 
   if (selectedDistricts.length > 0) {
-    filtered = filtered.filter((c) =>
+    filtered = filtered.filter((c: any) =>
       c.district_ko && selectedDistricts.some((d) => c.district_ko.startsWith(d))
     );
   }
@@ -133,7 +158,7 @@ export default async function ClinicsPage({
       .map((cat) => new Set(categoryMap[cat] || []))
       .filter((s) => s.size > 0);
     if (sets.length > 0)
-      filtered = filtered.filter((c) => sets.every((s) => s.has(c.id)));
+      filtered = filtered.filter((c: any) => sets.every((s) => s.has(c.id)));
   }
 
   function toggleUrl(key: string, val: string, cur: string[]) {
@@ -159,18 +184,7 @@ export default async function ClinicsPage({
 
   const hasFilter = selectedDistricts.length > 0 || selectedCategories.length > 0;
 
-  // 글자수 기준으로 표시할 태그 수 결정
-  function getVisibleTags(specs: string[]) {
-    const maxChars = 30;
-    let totalChars = 0;
-    let count = 0;
-    for (const s of specs) {
-      totalChars += s.length;
-      if (totalChars > maxChars && count > 0) break;
-      count++;
-    }
-    return count;
-  }
+  const MAX_TAG_CHARS = 80;
 
   return (
     <div className="min-h-screen">
@@ -283,44 +297,55 @@ export default async function ClinicsPage({
           </p>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {filtered.map((c) => {
-              const visibleCount = getVisibleTags(c.specialties);
-              const visible = c.specialties.slice(0, visibleCount);
-              const remaining = c.specialties.length - visibleCount;
+            {filtered.map((c: any) => {
+              const greenTags: string[] = c.specialties;
+              const blueTags: string[] = c.treatmentNames.filter(
+                (name: string) => !greenTags.includes(name)
+              );
+
+              const allTags = [
+                ...greenTags.map((t: string) => ({ text: t, color: "blue" })),
+                ...blueTags.map((t: string) => ({ text: t, color: "green" })),
+              ];
+
+              let charCount = 0;
+              let visibleCount = 0;
+              for (const tag of allTags) {
+                charCount += tag.text.length;
+                if (charCount > MAX_TAG_CHARS && visibleCount > 0) break;
+                visibleCount++;
+              }
+
+              const visibleTags = allTags.slice(0, visibleCount);
+              const remaining = allTags.length - visibleCount;
 
               return (
                 <Link
                   key={c.id}
                   href={`/clinics/${c.id}`}
-                  className="border rounded-xl p-6 hover:shadow-lg transition block"
+                  className="border rounded-xl p-6 hover:shadow-lg transition block h-48 overflow-hidden"
                 >
                   <h2 className="text-xl font-bold">
                     {c.name_ko || c.name_en}
                   </h2>
-                  <p className="text-gray-500 text-sm mt-1">{c.name_en}</p>
+                  <p className="text-gray-500 text-sm">{c.name_en}</p>
 
-                  {c.address_ko && (
-                    <p className="text-gray-600 text-sm mt-3">
-                      📍 {c.address_ko}
-                    </p>
-                  )}
-                  {c.phone && (
-                    <p className="text-gray-600 text-sm mt-1">📞 {c.phone}</p>
-                  )}
-
-                  {/* 병원 specialties 초록색 태그 */}
-                  {c.specialties.length > 0 && (
+                  {allTags.length > 0 && (
                     <div className="flex flex-wrap items-center gap-1.5 mt-3">
-                      {visible.map((spec: string, i: number) => (
+                      {visibleTags.map((tag, i) => (
                         <span
                           key={i}
-                          className="bg-green-50 text-green-700 px-2.5 py-0.5 rounded-full text-xs font-medium"
+                          className={
+                            tag.color === "blue"
+                              ? "bg-blue-50 text-blue-700 px-2.5 py-0.5 rounded-full text-xs font-medium"
+                              : "bg-green-50 text-green-700 px-2.5 py-0.5 rounded-full text-xs font-medium"
+                          }
                         >
-                          {spec}
+                          {tag.text}
                         </span>
                       ))}
                       {remaining > 0 && (
-                        <span className="text-gray-400 text-xs">
+                        <span className="bg-amber-100 text-amber-700 px-2.5 py-0.5 rounded-full text-xs font-medium">
                           +{remaining}개
                         </span>
                       )}
