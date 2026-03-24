@@ -10,38 +10,83 @@ async function getData(slug: string) {
 
   const treatmentName = decodeURIComponent(slug);
 
-  const { data: treatment } = await supabase
-    .from("treatments")
+  // 1) 표준 시술 조회
+  const { data: standard } = await supabase
+    .from("standard_treatments")
     .select("*")
     .eq("name_ko", treatmentName)
     .single();
 
-  if (!treatment) return null;
+  if (!standard) return null;
 
+  // 2) 이 표준 시술에 연결된 개별 시술들
+  const { data: treatments } = await supabase
+    .from("treatments")
+    .select("id, name_ko, name_en")
+    .eq("standard_treatment_id", standard.id)
+    .order("name_ko");
+
+  const treatmentIds = (treatments || []).map((t) => t.id);
+
+  if (treatmentIds.length === 0) {
+    return { standard, treatments: [], clinics: [], concerns: [], bodyParts: [] };
+  }
+
+  // 3) 클리닉 정보 (개별 시술별 가격 포함)
   const { data: clinicRows } = await supabase
     .from("clinic_treatments")
-    .select("clinic_id, price_krw, description, clinics(id, name_ko, name_en, address_ko, phone)")
-    .eq("treatment_id", treatment.id);
+    .select(
+      "treatment_id, price_krw, description, clinics(id, name_ko, name_en, address_ko, phone)"
+    )
+    .in("treatment_id", treatmentIds);
 
+  // 클리닉별로 그룹화 (같은 클리닉이 여러 개별 시술을 제공할 수 있음)
+  const clinicMap = new Map<number, any>();
+  (clinicRows || []).forEach((r: any) => {
+    if (!r.clinics?.id) return;
+    const clinicId = r.clinics.id;
+    if (!clinicMap.has(clinicId)) {
+      clinicMap.set(clinicId, {
+        ...r.clinics,
+        treatments: [],
+      });
+    }
+    const treatmentInfo = (treatments || []).find((t) => t.id === r.treatment_id);
+    clinicMap.get(clinicId).treatments.push({
+      name_ko: treatmentInfo?.name_ko || "",
+      price_krw: r.price_krw,
+      description: r.description,
+    });
+  });
+
+  // 4) 관련 고민
   const { data: concernRows } = await supabase
     .from("treatment_concerns")
     .select("concern_id, concerns(id, name_ko, name_en)")
-    .eq("treatment_id", treatment.id);
+    .in("treatment_id", treatmentIds);
 
+  const concernMap = new Map<number, any>();
+  (concernRows || []).forEach((r: any) => {
+    if (r.concerns?.id) concernMap.set(r.concerns.id, r.concerns);
+  });
+
+  // 5) 관련 부위
   const { data: bodyPartRows } = await supabase
     .from("treatment_body_parts")
     .select("body_part_id, body_parts(id, name_ko, name_en)")
-    .eq("treatment_id", treatment.id);
+    .in("treatment_id", treatmentIds);
+
+  const bodyPartMap = new Map<number, any>();
+  (bodyPartRows || []).forEach((r: any) => {
+    if (r.body_parts?.id) bodyPartMap.set(r.body_parts.id, r.body_parts);
+  });
 
   return {
-    treatment,
-    clinics: (clinicRows || []).map((r: any) => ({
-      ...r.clinics,
-      price_krw: r.price_krw,
-      description: r.description,
-    })).filter((c: any) => c.id),
-    concerns: (concernRows || []).map((r: any) => r.concerns).filter(Boolean),
-    bodyParts: (bodyPartRows || []).map((r: any) => r.body_parts).filter(Boolean),
+    standard,
+    treatments: treatments || [],
+    clinics: Array.from(clinicMap.values()),
+    concerns: Array.from(concernMap.values()),
+    bodyParts: Array.from(bodyPartMap.values()),
   };
 }
 
@@ -55,29 +100,43 @@ export default async function TreatmentDetailPage({
 
   if (!data) return notFound();
 
-  const { treatment, clinics, concerns, bodyParts } = data;
+  const { standard, treatments, clinics, concerns, bodyParts } = data;
 
   return (
     <div className="min-h-screen">
       <header className="bg-gray-900 text-white py-10 px-6">
         <div className="max-w-5xl mx-auto">
-          <Link href="/treatments" className="text-gray-400 hover:text-white text-sm">
+          <Link
+            href="/treatments"
+            className="text-gray-400 hover:text-white text-sm"
+          >
             ← 시술 목록
           </Link>
-          <h1 className="text-3xl font-bold mt-2">{treatment.name_ko}</h1>
-          <p className="text-gray-400 mt-1">{treatment.name_en}</p>
+          <h1 className="text-3xl font-bold mt-2">{standard.name_ko}</h1>
+          <p className="text-gray-400 mt-1">{standard.name_en}</p>
           <span className="inline-block bg-gray-700 px-3 py-1 rounded-full text-sm mt-3">
-            {treatment.category_ko}
+            {standard.category_ko}
           </span>
         </div>
       </header>
 
       <section className="max-w-5xl mx-auto py-8 px-6">
-        {/* 시술 설명 */}
-        {treatment.description_ko && (
-          <div className="border rounded-xl p-6 mb-8">
-            <h2 className="text-xl font-bold mb-2">시술 설명</h2>
-            <p className="text-gray-600">{treatment.description_ko}</p>
+        {/* 개별 시술 목록 */}
+        {treatments.length > 0 && (
+          <div className="mb-8">
+            <h2 className="text-xl font-bold mb-3">
+              세부 시술 ({treatments.length})
+            </h2>
+            <div className="flex flex-wrap gap-2">
+              {treatments.map((t) => (
+                <span
+                  key={t.id}
+                  className="bg-blue-50 text-blue-700 px-3 py-1 rounded-full text-sm"
+                >
+                  {t.name_ko}
+                </span>
+              ))}
+            </div>
           </div>
         )}
 
@@ -87,7 +146,10 @@ export default async function TreatmentDetailPage({
             <h2 className="text-xl font-bold mb-3">시술 부위</h2>
             <div className="flex flex-wrap gap-2">
               {bodyParts.map((bp: any) => (
-                <span key={bp.id} className="bg-orange-50 text-orange-700 px-3 py-1 rounded-full text-sm">
+                <span
+                  key={bp.id}
+                  className="bg-orange-50 text-orange-700 px-3 py-1 rounded-full text-sm"
+                >
                   {bp.name_ko}
                 </span>
               ))}
@@ -131,6 +193,21 @@ export default async function TreatmentDetailPage({
               )}
               {c.phone && (
                 <p className="text-gray-600 text-sm mt-1">📞 {c.phone}</p>
+              )}
+              {/* 이 클리닉의 개별 시술 및 가격 */}
+              {c.treatments && c.treatments.length > 0 && (
+                <div className="mt-3 border-t pt-2">
+                  {c.treatments.map((ct: any, idx: number) => (
+                    <div key={idx} className="flex justify-between text-sm mt-1">
+                      <span className="text-gray-700">{ct.name_ko}</span>
+                      {ct.price_krw && (
+                        <span className="text-green-600 font-semibold">
+                          ₩{ct.price_krw.toLocaleString()}
+                        </span>
+                      )}
+                    </div>
+                  ))}
+                </div>
               )}
             </Link>
           ))}
