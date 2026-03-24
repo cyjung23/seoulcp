@@ -18,27 +18,30 @@ interface Treatment {
   clinicCount: number;
 }
 
+// 바디 카테고리에서 크로스 참조할 지방제거주사 항목
+const BODY_CROSS_REF = [
+  "지방파괴주사(바디)",
+  "지방분해주사(바디)",
+];
+
 async function getData() {
   const supabase = createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
   );
 
-  // 1) 표준 시술 목록 (16개 카테고리, 67개 표준 시술)
   const { data: standards } = await supabase
     .from("standard_treatments")
     .select("*")
     .order("category_order")
     .order("sort_order");
 
-  // 2) 실제 시술 목록 (278개)
   const { data: treatments } = await supabase
     .from("treatments")
     .select("id, name_ko, name_en, standard_treatment_id")
     .not("standard_treatment_id", "is", null)
     .order("name_ko");
 
-  // 3) 시술별 클리닉 수
   const { data: relations } = await supabase
     .from("clinic_treatments")
     .select("treatment_id");
@@ -62,7 +65,7 @@ async function getData() {
 export default async function TreatmentsPage() {
   const { standards, treatments } = await getData();
 
-  // 카테고리별 그룹화
+  // 카테고리별 그룹핑
   const categories = standards.reduce<
     Record<string, { order: number; items: StandardTreatment[] }>
   >((acc, s) => {
@@ -77,16 +80,52 @@ export default async function TreatmentsPage() {
     ([, a], [, b]) => a.order - b.order
   );
 
-  // 표준 시술별 클리닉 수 합산
+  // 크로스 참조용: 지방제거주사 중 바디 항목
+  const crossRefItems = standards.filter(
+    (s) => s.category_ko === "지방제거주사" && BODY_CROSS_REF.includes(s.name_ko)
+  );
+
   const stdClinicCount = (stdId: string) => {
     return treatments
       .filter((t) => t.standard_treatment_id === stdId)
       .reduce((sum, t) => sum + t.clinicCount, 0);
   };
 
-  // 표준 시술에 연결된 개별 시술 수
   const stdTreatmentCount = (stdId: string) => {
     return treatments.filter((t) => t.standard_treatment_id === stdId).length;
+  };
+
+  // 시술 카드 렌더링 함수
+  const renderCard = (std: StandardTreatment, isCrossRef = false) => {
+    const clinics = stdClinicCount(std.id);
+    const treatmentVariants = stdTreatmentCount(std.id);
+    return (
+      <Link
+        key={`${std.id}${isCrossRef ? "-xref" : ""}`}
+        href={`/treatments/${encodeURIComponent(std.name_ko)}`}
+        className={`border rounded-lg p-4 hover:shadow-md transition block ${
+          isCrossRef ? "border-dashed border-blue-300 bg-blue-50" : ""
+        }`}
+      >
+        <h3 className="font-bold text-lg">
+          {std.name_ko}
+          {isCrossRef && (
+            <span className="text-xs text-blue-500 ml-2 font-normal">
+              지방제거주사
+            </span>
+          )}
+        </h3>
+        <p className="text-gray-500 text-sm">{std.name_en}</p>
+        <div className="mt-2 flex gap-3 text-sm">
+          <span className="text-green-600 font-semibold">
+            🏥 {clinics}개 클리닉
+          </span>
+          <span className="text-blue-600 font-semibold">
+            💉 {treatmentVariants}개 시술
+          </span>
+        </div>
+      </Link>
+    );
   };
 
   return (
@@ -110,28 +149,11 @@ export default async function TreatmentsPage() {
               {categoryName}
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {items.map((std) => {
-                const clinics = stdClinicCount(std.id);
-                const treatmentVariants = stdTreatmentCount(std.id);
-                return (
-                  <Link
-                    key={std.id}
-                    href={`/treatments/${encodeURIComponent(std.name_ko)}`}
-                    className="border rounded-lg p-4 hover:shadow-md transition block"
-                  >
-                    <h3 className="font-bold text-lg">{std.name_ko}</h3>
-                    <p className="text-gray-500 text-sm">{std.name_en}</p>
-                    <div className="mt-2 flex gap-3 text-sm">
-                      <span className="text-green-600 font-semibold">
-                        🏥 {clinics}개 클리닉
-                      </span>
-                      <span className="text-blue-600 font-semibold">
-                        💉 {treatmentVariants}개 시술
-                      </span>
-                    </div>
-                  </Link>
-                );
-              })}
+              {items.map((std) => renderCard(std))}
+
+              {/* 바디 카테고리에 지방제거주사 크로스 참조 */}
+              {categoryName === "바디" &&
+                crossRefItems.map((std) => renderCard(std, true))}
             </div>
           </div>
         ))}
