@@ -39,9 +39,6 @@ export default function RootLayout({
               <Link href="/" className="hover:text-gray-300 transition">
                 고민
               </Link>
-              <Link href="/clinics" className="hover:text-gray-300 transition">
-                클리닉
-              </Link>
               <Link
                 href="/treatments"
                 className="hover:text-gray-300 transition"
@@ -50,6 +47,9 @@ export default function RootLayout({
               </Link>
               <Link href="/devices" className="hover:text-gray-300 transition">
                 장비
+              </Link>
+              <Link href="/clinics" className="hover:text-gray-300 transition">
+                클리닉
               </Link>
             </div>
           </div>
