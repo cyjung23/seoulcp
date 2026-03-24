@@ -9,7 +9,7 @@ const CATEGORY_ORDER = [
   { ko: "얼굴윤곽·볼륨", en: "Face Shape & Volume", icon: "💎" },
   { ko: "체형·지방", en: "Body Contouring & Fat", icon: "🏋️" },
   { ko: "색소·피부톤", en: "Pigmentation & Skin Tone", icon: "🎨" },
-  { ko: "점·사마귀·제거", en: "Spots, Warts & Removal", icon: "🔍" },
+  { ko: "점·사마귀·제거", en: "Spot & Wart Removal", icon: "🔍" },
   { ko: "여드름·모공·피지", en: "Acne, Pores & Sebum", icon: "🧴" },
   { ko: "피부회복·안티에이징", en: "Skin Rejuvenation & Anti-Aging", icon: "🌿" },
   { ko: "홍조·혈관", en: "Redness & Vessels", icon: "❤️‍🔥" },
