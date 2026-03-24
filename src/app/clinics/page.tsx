@@ -57,50 +57,37 @@ async function getData() {
     }
   });
 
-  // 클리닉별 시술 카테고리 태그
-  const clinicCategories: Record<number, string[]> = {};
-  (allClinicTreatments || []).forEach((ct: any) => {
-    const stdId = treatmentToStdId[ct.treatment_id];
-    if (stdId) {
-      const cat = stdIdToCategory[stdId];
-      if (cat) {
-        if (!clinicCategories[ct.clinic_id]) clinicCategories[ct.clinic_id] = [];
-        if (!clinicCategories[ct.clinic_id].includes(cat)) {
-          clinicCategories[ct.clinic_id].push(cat);
-        }
-      }
+  // 카테고리별 보유 클리닉 수 (희소성 계산)
+  const categoryClinicCount: Record<string, number> = {};
+  Object.entries(categoryMap).forEach(([cat, clinicSet]) => {
+    categoryClinicCount[cat] = clinicSet.size;
+  });
+
+  // clinic_specialties 조회
+  const { data: clinicSpecs } = await supabase
+    .from("clinic_specialties")
+    .select("clinic_id, specialty_ko");
+
+  const clinicSpecMap: Record<number, string[]> = {};
+  (clinicSpecs || []).forEach((cs: any) => {
+    if (!clinicSpecMap[cs.clinic_id]) clinicSpecMap[cs.clinic_id] = [];
+    if (!clinicSpecMap[cs.clinic_id].includes(cs.specialty_ko)) {
+      clinicSpecMap[cs.clinic_id].push(cs.specialty_ko);
     }
   });
 
-  const catOrder: Record<string, number> = {};
-  categorySet.forEach((order, name) => { catOrder[name] = order; });
-  Object.keys(clinicCategories).forEach((cid) => {
-    clinicCategories[Number(cid)].sort((a, b) => (catOrder[a] || 99) - (catOrder[b] || 99));
-  });
-
-  // 대표원장/원장 정보 조회
-  const { data: doctors } = await supabase
-    .from("doctors")
-    .select("id, clinic_id, name_ko, title_ko")
-    .or("title_ko.like.%원장%")
-    .order("title_ko");
-
-  const clinicDirector: Record<number, { name: string; title: string }> = {};
-  (doctors || []).forEach((d: any) => {
-    const existing = clinicDirector[d.clinic_id];
-    const isDaepyo = d.title_ko?.includes("대표");
-    if (!existing || (isDaepyo && !existing.title.includes("대표"))) {
-      clinicDirector[d.clinic_id] = {
-        name: d.name_ko,
-        title: d.title_ko,
-      };
-    }
+  // 희소성 기반 정렬: 보유 클리닉 적은 순 → 앞에 배치
+  Object.keys(clinicSpecMap).forEach((cid) => {
+    clinicSpecMap[Number(cid)].sort((a, b) => {
+      const countA = categoryClinicCount[a] || 999;
+      const countB = categoryClinicCount[b] || 999;
+      return countA - countB;
+    });
   });
 
   const clinicsWithInfo = (clinics || []).map((c) => ({
     ...c,
-    categories: clinicCategories[c.id] || [],
-    director: clinicDirector[c.id] || null,
+    specialties: clinicSpecMap[c.id] || [],
   }));
 
   const districtSet = new Set<string>();
@@ -171,6 +158,19 @@ export default async function ClinicsPage({
   }
 
   const hasFilter = selectedDistricts.length > 0 || selectedCategories.length > 0;
+
+  // 글자수 기준으로 표시할 태그 수 결정
+  function getVisibleTags(specs: string[]) {
+    const maxChars = 30;
+    let totalChars = 0;
+    let count = 0;
+    for (const s of specs) {
+      totalChars += s.length;
+      if (totalChars > maxChars && count > 0) break;
+      count++;
+    }
+    return count;
+  }
 
   return (
     <div className="min-h-screen">
@@ -283,44 +283,52 @@ export default async function ClinicsPage({
           </p>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {filtered.map((c) => (
-              <Link
-                key={c.id}
-                href={`/clinics/${c.id}`}
-                className="border rounded-xl p-6 hover:shadow-lg transition block"
-              >
-                <h2 className="text-xl font-bold">{c.name_ko || c.name_en}</h2>
-                <p className="text-gray-500 text-sm mt-1">{c.name_en}</p>
+            {filtered.map((c) => {
+              const visibleCount = getVisibleTags(c.specialties);
+              const visible = c.specialties.slice(0, visibleCount);
+              const remaining = c.specialties.length - visibleCount;
 
-                {c.address_ko && (
-                  <p className="text-gray-600 text-sm mt-3">📍 {c.address_ko}</p>
-                )}
-                {c.phone && (
-                  <p className="text-gray-600 text-sm mt-1">📞 {c.phone}</p>
-                )}
+              return (
+                <Link
+                  key={c.id}
+                  href={`/clinics/${c.id}`}
+                  className="border rounded-xl p-6 hover:shadow-lg transition block"
+                >
+                  <h2 className="text-xl font-bold">
+                    {c.name_ko || c.name_en}
+                  </h2>
+                  <p className="text-gray-500 text-sm mt-1">{c.name_en}</p>
 
-                {/* 대표원장/원장 이름만 표시 */}
-                {c.director && (
-                  <p className="text-sm font-semibold text-gray-800 mt-3">
-                    {c.director.name} {c.director.title}
-                  </p>
-                )}
+                  {c.address_ko && (
+                    <p className="text-gray-600 text-sm mt-3">
+                      📍 {c.address_ko}
+                    </p>
+                  )}
+                  {c.phone && (
+                    <p className="text-gray-600 text-sm mt-1">📞 {c.phone}</p>
+                  )}
 
-                {/* 원장 없는 경우: 시술 카테고리 태그 */}
-                {!c.director && c.categories.length > 0 && (
-                  <div className="flex flex-wrap gap-1.5 mt-3">
-                    {c.categories.map((cat: string) => (
-                      <span
-                        key={cat}
-                        className="bg-gray-100 text-gray-600 px-2.5 py-0.5 rounded-full text-xs font-medium"
-                      >
-                        {cat}
-                      </span>
-                    ))}
-                  </div>
-                )}
-              </Link>
-            ))}
+                  {/* 병원 specialties 초록색 태그 */}
+                  {c.specialties.length > 0 && (
+                    <div className="flex flex-wrap items-center gap-1.5 mt-3">
+                      {visible.map((spec: string, i: number) => (
+                        <span
+                          key={i}
+                          className="bg-green-50 text-green-700 px-2.5 py-0.5 rounded-full text-xs font-medium"
+                        >
+                          {spec}
+                        </span>
+                      ))}
+                      {remaining > 0 && (
+                        <span className="text-gray-400 text-xs">
+                          +{remaining}개
+                        </span>
+                      )}
+                    </div>
+                  )}
+                </Link>
+              );
+            })}
           </div>
         )}
       </section>
