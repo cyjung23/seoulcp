@@ -61,32 +61,23 @@ async function getData(id: number) {
 
   const { data: doctors } = await supabase
     .from("doctors")
-    .select("*, doctor_specialties(*)")
+    .select("id, name_ko, name_en, title_ko")
     .eq("clinic_id", id);
 
-  // 대표원장 선택 + specialties 추출
-  let directorSpecialties: string[] = [];
-  const sortedDocs = [...(doctors || [])].sort((a, b) => {
-    const aD = a.title_ko?.includes("대표") ? 0 : 1;
-    const bD = b.title_ko?.includes("대표") ? 0 : 1;
-    return aD - bD;
-  });
+  // clinic_specialties 조회
+  const { data: clinicSpecs } = await supabase
+    .from("clinic_specialties")
+    .select("specialty_ko")
+    .eq("clinic_id", id);
 
-  if (sortedDocs.length > 0) {
-    const director = sortedDocs.find((d) => d.title_ko?.includes("원장"));
-    if (director && director.doctor_specialties?.length > 0) {
-      directorSpecialties = director.doctor_specialties.map(
-        (s: any) => s.specialty_ko
-      );
-    }
-  }
+  const specialties = (clinicSpecs || []).map((cs: any) => cs.specialty_ko);
 
   return {
     clinic,
     devices: (deviceRows || []).map((r: any) => r.devices).filter(Boolean),
     treatments,
     doctors: doctors || [],
-    directorSpecialties,
+    specialties,
   };
 }
 
@@ -100,7 +91,7 @@ export default async function ClinicDetailPage({
 
   if (!data) return notFound();
 
-  const { clinic, devices, treatments, doctors, directorSpecialties } = data;
+  const { clinic, devices, treatments, doctors, specialties } = data;
 
   const deviceCategories = [
     ...new Set(devices.map((d: any) => d.category_ko || "기타")),
@@ -134,7 +125,7 @@ export default async function ClinicDetailPage({
       </header>
 
       <section className="max-w-5xl mx-auto py-8 px-6">
-        {/* 기본 정보 + 원장 specialties */}
+        {/* 기본 정보 + clinic specialties */}
         <div className="border rounded-xl p-6 mb-8">
           <h2 className="text-xl font-bold mb-4">기본 정보</h2>
           {clinic.address_ko && (
@@ -153,17 +144,16 @@ export default async function ClinicDetailPage({
               rel="noopener noreferrer"
               className="text-blue-600 hover:underline"
             >
-              🌐 {clinic.website}
+              🔗 {clinic.website}
             </a>
           )}
 
-          {/* 원장 specialties 태그 */}
-          {directorSpecialties.length > 0 && (
+          {specialties.length > 0 && (
             <div className="flex flex-wrap gap-2 mt-4 pt-4 border-t">
-              {directorSpecialties.map((spec, i) => (
+              {specialties.map((spec: string, i: number) => (
                 <span
                   key={i}
-                  className="bg-cyan-50 text-cyan-700 px-3 py-1 rounded-full text-sm font-medium"
+                  className="bg-blue-50 text-blue-700 px-3 py-1 rounded-full text-sm font-medium"
                 >
                   {spec}
                 </span>
@@ -172,7 +162,7 @@ export default async function ClinicDetailPage({
           )}
         </div>
 
-        {/* 시술 */}
+        {/* 시술 목록 */}
         {treatments.length > 0 && (
           <div className="mb-8">
             <h2 className="text-xl font-bold mb-4">
@@ -240,7 +230,7 @@ export default async function ClinicDetailPage({
           </div>
         )}
 
-        {/* 의료진 — 이름과 직위만 표시 */}
+        {/* 의료진 */}
         {doctors.length > 0 && (
           <div className="mb-8">
             <h2 className="text-xl font-bold mb-4">
@@ -251,7 +241,7 @@ export default async function ClinicDetailPage({
                 <div key={doc.id} className="border rounded-lg p-4">
                   <p className="font-bold">{doc.name_ko}</p>
                   <p className="text-gray-500 text-sm">{doc.name_en}</p>
-                  <p className="text-gray-600 text-sm mt-1">{doc.title_ko}</p>
+                  <p className="text-blue-600 text-sm mt-1">{doc.title_ko}</p>
                 </div>
               ))}
             </div>
