@@ -2,6 +2,8 @@ import Link from "next/link";
 import { createClient } from "@supabase/supabase-js";
 import SearchBar from "./components/SearchBar";
 
+export const dynamic = "force-dynamic";
+
 /* ────────────────────────────────────────────
    12 카테고리 정의 (확정본)
    ──────────────────────────────────────────── */
