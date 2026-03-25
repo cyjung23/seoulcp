@@ -1,6 +1,8 @@
 import Link from "next/link";
 import { createClient } from "@supabase/supabase-js";
 
+export const dynamic = "force-dynamic";
+
 /* ────────────────────────────────────────────
    12 카테고리 순서 & 메타 (page.tsx와 동일)
    ──────────────────────────────────────────── */
