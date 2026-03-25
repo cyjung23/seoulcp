@@ -323,7 +323,7 @@ export default async function ClinicsPage({
                 <Link
                   key={c.id}
                   href={`/clinics/${c.id}`}
-                  className="border rounded-xl p-6 hover:shadow-lg transition block h-48 overflow-hidden"
+                  className="border rounded-xl px-5 py-4 hover:shadow-lg transition block min-h-48 max-h-72 overflow-hidden"
                 >
                   <h2 className="text-xl font-bold">
                     {c.name_ko || c.name_en}
