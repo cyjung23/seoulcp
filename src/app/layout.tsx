@@ -72,6 +72,12 @@ export default function RootLayout({
               >
                 시술
               </Link>
+              <Link
+                href="/surgeries"
+                className="hover:text-gray-300 transition"
+              >
+                수술
+              </Link>
               <Link href="/devices" className="hover:text-gray-300 transition">
                 장비
               </Link>

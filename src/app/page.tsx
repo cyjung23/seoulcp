@@ -182,7 +182,7 @@ export default async function Home() {
       {/* 빠른 링크 */}
       <section className="max-w-6xl mx-auto pb-12 px-6">
         <h2 className="text-xl font-bold text-gray-800 mb-6">바로가기</h2>
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
           <Link
             href="/treatments"
             className="border rounded-xl p-6 hover:shadow-lg transition block text-center"
@@ -191,6 +191,16 @@ export default async function Home() {
             <h3 className="font-bold mt-3">시술</h3>
             <p className="text-gray-500 text-sm mt-1">
               {treatmentCount}가지 시술 정보
+            </p>
+          </Link>
+          <Link
+            href="/surgeries"
+            className="border rounded-xl p-6 hover:shadow-lg transition block text-center"
+          >
+            <span className="text-3xl">🔪</span>
+            <h3 className="font-bold mt-3">수술</h3>
+            <p className="text-gray-500 text-sm mt-1">
+              성형·지방 수술 정보
             </p>
           </Link>
           <Link
