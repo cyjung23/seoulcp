@@ -80,7 +80,9 @@ async function getData(slug: string) {
   return {
     standard,
     treatments: treatments || [],
-    clinics: Array.from(clinicMap.values()),
+    clinics: Array.from(clinicMap.values()).sort((a, b) =>
+      (a.name_ko || "").localeCompare(b.name_ko || "", "ko")
+    ),
     concerns: Array.from(concernMap.values()),
     bodyParts: Array.from(bodyPartMap.values()),
   };
