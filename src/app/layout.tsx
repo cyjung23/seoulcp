@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Noto_Sans_KR } from "next/font/google";
 import Link from "next/link";
+import NavSearchBar from "./components/NavSearchBar";
 import "./globals.css";
 
 const notoSansKR = Noto_Sans_KR({
@@ -57,27 +58,31 @@ export default function RootLayout({
       <body className="min-h-full flex flex-col bg-white text-gray-900 font-[var(--font-noto-sans-kr)]">
         {/* 글로벌 네비게이션 */}
         <nav className="bg-base-dark text-white border-b border-gray-800">
-          <div className="max-w-6xl mx-auto px-6 py-3 flex items-center justify-between">
-            <Link href="/" className="text-lg font-bold tracking-tight">
+          <div className="max-w-6xl mx-auto px-4 py-2.5 flex items-center gap-4">
+            {/* 로고 */}
+            <Link href="/" className="text-base font-bold tracking-tight flex-shrink-0">
               <span className="text-logo-s">S</span>
-              <span className="text-gray-300">eoul</span>
+              <span className="text-gray-300">eoul </span>
               <span className="text-logo-b">B</span>
+              <span className="text-gray-300">eauty </span>
               <span className="text-logo-c">C</span>
+              <span className="text-gray-300">ode</span>
             </Link>
-            <div className="flex gap-6 text-sm">
-              <Link href="/" className="hover:text-ui-primary transition">
+
+            {/* 검색바 */}
+            <div className="flex-1 max-w-md">
+              <NavSearchBar />
+            </div>
+
+            {/* 메뉴 */}
+            <div className="flex gap-5 text-sm flex-shrink-0">
+              <Link href="/concerns" className="hover:text-ui-primary transition">
                 고민
               </Link>
-              <Link
-                href="/treatments"
-                className="hover:text-ui-primary transition"
-              >
+              <Link href="/treatments" className="hover:text-ui-primary transition">
                 시술
               </Link>
-              <Link
-                href="/surgeries"
-                className="hover:text-ui-primary transition"
-              >
+              <Link href="/surgeries" className="hover:text-ui-primary transition">
                 수술
               </Link>
               <Link href="/devices" className="hover:text-ui-primary transition">

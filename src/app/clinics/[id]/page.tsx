@@ -112,7 +112,7 @@ export default async function ClinicDetailPage({
 
   return (
     <div className="min-h-screen">
-      <header className="bg-base-dark text-white py-10 px-6">
+      <header className="bg-base-dark text-white py-4 px-6">
         <div className="max-w-5xl mx-auto">
           <Link
             href="/clinics"
@@ -120,8 +120,8 @@ export default async function ClinicDetailPage({
           >
             ← 클리닉 목록
           </Link>
-          <h1 className="text-3xl font-bold mt-2">{clinic.name_ko}</h1>
-          <p className="text-gray-400 mt-1">{clinic.name_en}</p>
+          <h1 className="text-2xl font-bold mt-1">{clinic.name_ko}</h1>
+          <p className="text-gray-400 text-sm mt-0.5">{clinic.name_en}</p>
         </div>
       </header>
 
@@ -153,7 +153,7 @@ export default async function ClinicDetailPage({
               {specialties.map((spec: string, i: number) => (
                 <span
                   key={i}
-                  className="bg-pink-50 text-ui-primary px-3 py-1 rounded-full text-sm font-medium"
+                  className="bg-blue-50 text-ui-primary px-3 py-1 rounded-full text-sm font-medium"
                 >
                   {spec}
                 </span>

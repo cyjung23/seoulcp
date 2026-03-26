@@ -4,17 +4,17 @@ import { createClient } from "@supabase/supabase-js";
 export const dynamic = "force-dynamic";
 
 const CATEGORY_ORDER = [
-  { ko: "주름·탄력", en: "Wrinkles & Firmness", icon: "✨" },
-  { ko: "얼굴윤곽·볼륨", en: "Face Shape & Volume", icon: "💎" },
-  { ko: "체형·지방", en: "Body Contouring & Fat", icon: "🏋️" },
-  { ko: "색소·피부톤", en: "Pigmentation & Skin Tone", icon: "🎨" },
-  { ko: "점·사마귀 제거", en: "Spot & Wart Removal", icon: "🔍" },
-  { ko: "여드름·모공·피지", en: "Acne, Pores & Sebum", icon: "🧴" },
-  { ko: "피부회복·안티에이징", en: "Skin Rejuvenation & Anti-Aging", icon: "🌿" },
-  { ko: "홍조·혈관", en: "Redness & Vessels", icon: "❤️‍🔥" },
-  { ko: "탈모·두피", en: "Hair Loss & Scalp", icon: "💇" },
+  { ko: "주름/탄력", en: "Wrinkles & Firmness", icon: "✨" },
+  { ko: "얼굴윤곽/볼륨", en: "Face Shape & Volume", icon: "💎" },
+  { ko: "체형/지방", en: "Body Contouring & Fat", icon: "🏋️" },
+  { ko: "색소/피부톤", en: "Pigmentation & Skin Tone", icon: "🎨" },
+  { ko: "점/사마귀 제거", en: "Spot & Wart Removal", icon: "🔍" },
+  { ko: "여드름/모공/피지", en: "Acne, Pores & Sebum", icon: "🧴" },
+  { ko: "피부회복/안티에이징", en: "Skin Rejuvenation & Anti-Aging", icon: "🌿" },
+  { ko: "홍조/혈관", en: "Redness & Vessels", icon: "❤️‍🔥" },
+  { ko: "탈모/두피", en: "Hair Loss & Scalp", icon: "💇" },
   { ko: "흉터", en: "Scars", icon: "🩹" },
-  { ko: "부작용·재시술", en: "Complications & Correction", icon: "🔄" },
+  { ko: "부작용/재시술", en: "Complications & Correction", icon: "🔄" },
   { ko: "기타고민", en: "Other Concerns", icon: "📋" },
 ];
 
@@ -71,15 +71,15 @@ export default async function ConcernsPage({
 
   return (
     <div className="min-h-screen">
-      <header className="bg-base-dark text-white py-10 px-6">
+      <header className="bg-base-dark text-white py-4 px-6">
         <div className="max-w-6xl mx-auto">
           <Link href="/" className="text-gray-400 hover:text-white text-sm">
             ← Home
           </Link>
-          <h1 className="text-3xl font-bold mt-2">
+          <h1 className="text-2xl font-bold mt-1">
             {selectedCategory ? selectedCategory : "전체 고민"}
           </h1>
-          <p className="text-gray-400 mt-1">
+          <p className="text-gray-400 text-sm mt-0.5">
             {selectedCategory
               ? `${
                   CATEGORY_ORDER.find((c) => c.ko === selectedCategory)?.en ||
@@ -90,8 +90,8 @@ export default async function ConcernsPage({
         </div>
       </header>
 
-      <section className="max-w-6xl mx-auto py-8 px-6">
-        <div className="flex flex-wrap gap-2 mb-8">
+      <section className="max-w-6xl mx-auto py-6 px-6">
+        <div className="flex flex-wrap gap-2 mb-6">
           <Link
             href="/concerns"
             className={`px-3 py-1.5 rounded-full text-sm font-medium border transition ${
@@ -126,7 +126,7 @@ export default async function ConcernsPage({
           const items = grouped[cat.ko] || [];
           if (items.length === 0) return null;
           return (
-            <div key={cat.ko} className="mb-10">
+            <div key={cat.ko} className="mb-8">
               {!selectedCategory && (
                 <div className="flex items-center gap-2 mb-4 border-b pb-2">
                   <span className="text-xl">{cat.icon}</span>

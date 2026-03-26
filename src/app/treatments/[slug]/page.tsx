@@ -100,7 +100,7 @@ export default async function TreatmentDetailPage({
 
   return (
     <div className="min-h-screen">
-      <header className="bg-base-dark text-white py-10 px-6">
+      <header className="bg-base-dark text-white py-4 px-6">
         <div className="max-w-5xl mx-auto">
           <Link
             href="/treatments"
@@ -108,9 +108,9 @@ export default async function TreatmentDetailPage({
           >
             ← 시술 목록
           </Link>
-          <h1 className="text-3xl font-bold mt-2">{standard.name_ko}</h1>
-          <p className="text-gray-400 mt-1">{standard.name_en}</p>
-          <span className="inline-block bg-gray-700 px-3 py-1 rounded-full text-sm mt-3">
+          <h1 className="text-2xl font-bold mt-1">{standard.name_ko}</h1>
+          <p className="text-gray-400 text-sm mt-0.5">{standard.name_en}</p>
+          <span className="inline-block bg-gray-700 px-3 py-1 rounded-full text-sm mt-2">
             {standard.category_ko}
           </span>
         </div>
@@ -159,7 +159,7 @@ export default async function TreatmentDetailPage({
                 <Link
                   key={c.id}
                   href={`/concerns/${encodeURIComponent(c.name_ko)}`}
-                  className="bg-pink-50 text-ui-primary px-3 py-1 rounded-full text-sm hover:bg-pink-100"
+                  className="bg-blue-50 text-ui-primary px-3 py-1 rounded-full text-sm hover:bg-blue-100"
                 >
                   {c.name_ko}
                 </Link>

@@ -78,7 +78,7 @@ export default async function ConcernDetailPage({
 
   return (
     <div className="min-h-screen">
-      <header className="bg-base-dark text-white py-10 px-6">
+      <header className="bg-base-dark text-white py-4 px-6">
         <div className="max-w-5xl mx-auto">
           <div className="flex items-center gap-2 text-sm text-gray-400">
             <Link href="/" className="hover:text-white transition">
@@ -111,17 +111,17 @@ export default async function ConcernDetailPage({
             <span className="text-gray-300">{concern.name_ko}</span>
           </div>
 
-          <h1 className="text-3xl font-bold mt-3">{concern.name_ko}</h1>
-          <p className="text-gray-400 mt-1">{concern.name_en}</p>
+          <h1 className="text-2xl font-bold mt-2">{concern.name_ko}</h1>
+          <p className="text-gray-400 text-sm mt-0.5">{concern.name_en}</p>
           {concern.concern_group_ko && (
-            <span className="inline-block bg-gray-700 text-gray-300 px-3 py-1 rounded-full text-xs mt-3">
+            <span className="inline-block bg-gray-700 text-gray-300 px-3 py-1 rounded-full text-xs mt-2">
               {concern.concern_group_ko} · {concern.concern_group_en}
             </span>
           )}
         </div>
       </header>
 
-      <section className="max-w-5xl mx-auto py-8 px-6">
+      <section className="max-w-5xl mx-auto py-6 px-6">
         <h2 className="text-xl font-bold mb-4">
           관련 시술 ({treatments.length})
         </h2>

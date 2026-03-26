@@ -37,19 +37,19 @@ export default async function DevicesPage() {
 
   return (
     <div className="min-h-screen">
-      <header className="bg-base-dark text-white py-10 px-6">
+      <header className="bg-base-dark text-white py-4 px-6">
         <div className="max-w-5xl mx-auto">
           <Link href="/" className="text-gray-400 hover:text-white text-sm">
             ← Home
           </Link>
-          <h1 className="text-3xl font-bold mt-2">장비 / Devices</h1>
-          <p className="text-gray-400 mt-1">{devices.length}개 장비</p>
+          <h1 className="text-2xl font-bold mt-1">장비 / Devices</h1>
+          <p className="text-gray-400 text-sm mt-0.5">{devices.length}개 장비</p>
         </div>
       </header>
 
-      <section className="max-w-5xl mx-auto py-8 px-6">
+      <section className="max-w-5xl mx-auto py-6 px-6">
         {categories.map((cat) => (
-          <div key={cat} className="mb-10">
+          <div key={cat} className="mb-8">
             <h2 className="text-xl font-bold mb-4 border-b pb-2">{cat}</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {devices

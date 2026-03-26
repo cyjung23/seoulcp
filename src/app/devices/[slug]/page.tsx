@@ -45,14 +45,14 @@ export default async function DeviceDetailPage({
 
   return (
     <div className="min-h-screen">
-      <header className="bg-base-dark text-white py-10 px-6">
+      <header className="bg-base-dark text-white py-4 px-6">
         <div className="max-w-5xl mx-auto">
           <Link href="/devices" className="text-gray-400 hover:text-white text-sm">
             ← 장비 목록
           </Link>
-          <h1 className="text-3xl font-bold mt-2">{device.device_name_ko}</h1>
-          <p className="text-gray-400 mt-1">{device.device_name_en}</p>
-          <div className="flex gap-4 mt-3">
+          <h1 className="text-2xl font-bold mt-1">{device.device_name_ko}</h1>
+          <p className="text-gray-400 text-sm mt-0.5">{device.device_name_en}</p>
+          <div className="flex gap-4 mt-2">
             <span className="bg-gray-700 px-3 py-1 rounded-full text-sm">
               {device.category_ko}
             </span>
@@ -65,7 +65,7 @@ export default async function DeviceDetailPage({
         </div>
       </header>
 
-      <section className="max-w-5xl mx-auto py-8 px-6">
+      <section className="max-w-5xl mx-auto py-6 px-6">
         <h2 className="text-xl font-bold mb-4">
           보유 클리닉 ({clinics.length})
         </h2>

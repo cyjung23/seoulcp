@@ -176,12 +176,12 @@ export default async function ClinicsPage({
 
   return (
     <div className="min-h-screen">
-      <header className="bg-base-dark text-white py-10 px-6">
+      <header className="bg-base-dark text-white py-4 px-6">
         <div className="max-w-5xl mx-auto">
           <Link href="/" className="text-gray-400 hover:text-white text-sm">
             ← Home
           </Link>
-          <h1 className="text-3xl font-bold mt-2">클리닉 / Clinics</h1>
+          <h1 className="text-2xl font-bold mt-1">클리닉 / Clinics</h1>
           <p className="text-gray-400 mt-1">
             서울 {filtered.length}개 클리닉
             {hasFilter && ` (전체 ${clinics.length}개 중)`}
@@ -325,7 +325,7 @@ export default async function ClinicsPage({
                           key={i}
                           className={
                             tag.color === "primary"
-                              ? "bg-pink-50 text-ui-primary px-2.5 py-0.5 rounded-full text-xs font-medium"
+                              ? "bg-blue-50 text-ui-primary px-2.5 py-0.5 rounded-full text-xs font-medium"
                               : "bg-green-50 text-ui-accent px-2.5 py-0.5 rounded-full text-xs font-medium"
                           }
                         >

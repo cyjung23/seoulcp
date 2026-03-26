@@ -91,13 +91,8 @@ export default async function TreatmentsPage() {
       .reduce((sum, t) => sum + t.clinicCount, 0);
   };
 
-  const stdTreatmentCount = (stdId: string) => {
-    return treatments.filter((t) => t.standard_treatment_id === stdId).length;
-  };
-
   const renderCard = (std: StandardTreatment) => {
     const clinics = stdClinicCount(std.id);
-    const treatmentVariants = stdTreatmentCount(std.id);
     return (
       <Link
         key={std.id}
@@ -106,13 +101,16 @@ export default async function TreatmentsPage() {
       >
         <h3 className="font-bold text-lg">{std.name_ko}</h3>
         <p className="text-gray-500 text-sm">{std.name_en}</p>
-        <div className="mt-2 flex gap-3 text-sm">
-          <span className="text-ui-accent font-semibold">
-            🏥 {clinics}개 클리닉
-          </span>
-          <span className="text-ui-secondary font-semibold">
-            💉 {treatmentVariants}개 시술
-          </span>
+        <div className="mt-2 text-sm">
+          {clinics > 0 ? (
+            <span className="text-ui-accent font-semibold">
+              🏥 {clinics}개 클리닉
+            </span>
+          ) : (
+            <span className="text-gray-400 font-medium">
+              준비중
+            </span>
+          )}
         </div>
       </Link>
     );
@@ -120,21 +118,21 @@ export default async function TreatmentsPage() {
 
   return (
     <div className="min-h-screen">
-      <header className="bg-base-dark text-white py-10 px-6">
+      <header className="bg-base-dark text-white py-4 px-6">
         <div className="max-w-5xl mx-auto">
           <Link href="/" className="text-gray-400 hover:text-white text-sm">
             ← Home
           </Link>
-          <h1 className="text-3xl font-bold mt-2">시술 / Treatments</h1>
-          <p className="text-gray-400 mt-1">
+          <h1 className="text-2xl font-bold mt-1">시술 / Treatments</h1>
+          <p className="text-gray-400 text-sm mt-0.5">
             {sortedCategories.length}개 카테고리 · {standards.length}개 표준 시술
           </p>
         </div>
       </header>
 
-      <section className="max-w-5xl mx-auto py-8 px-6">
+      <section className="max-w-5xl mx-auto py-6 px-6">
         {sortedCategories.map(([categoryName, { items }]) => (
-          <div key={categoryName} className="mb-10">
+          <div key={categoryName} className="mb-8">
             <h2 className="text-xl font-bold mb-4 border-b pb-2">
               {categoryName}
             </h2>
