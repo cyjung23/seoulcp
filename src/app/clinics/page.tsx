@@ -29,11 +29,13 @@ async function getData() {
 
   const { data: allTreatments } = await supabase
     .from("treatments")
-    .select("id, name_ko, standard_treatment_id");
+    .select("id, name_ko, standard_treatment_id")
+    .limit(5000);
 
   const { data: allClinicTreatments } = await supabase
     .from("clinic_treatments")
-    .select("clinic_id, treatment_id");
+    .select("clinic_id, treatment_id")
+    .limit(10000);
 
   const treatmentToStdId: Record<number, string> = {};
   const treatmentToName: Record<number, string> = {};
@@ -68,7 +70,8 @@ async function getData() {
 
   const { data: clinicSpecs } = await supabase
     .from("clinic_specialties")
-    .select("clinic_id, specialty_ko");
+    .select("clinic_id, specialty_ko")
+    .limit(5000);
 
   const clinicSpecMap: Record<number, string[]> = {};
   (clinicSpecs || []).forEach((cs: any) => {
