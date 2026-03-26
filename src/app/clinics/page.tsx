@@ -3,18 +3,40 @@ import { createClient } from "@supabase/supabase-js";
 
 export const dynamic = "force-dynamic";
 
-async function getData() {
+/* ── 구 목록 (고정, 클리닉 수는 DB에서 조회) ── */
+const SEOUL_DISTRICTS = [
+  "강남구", "서초구", "송파구", "마포구", "영등포구",
+  "중구", "강서구", "강동구", "노원구", "양천구",
+  "광진구", "성동구", "은평구", "용산구", "관악구",
+  "동작구", "강북구", "구로구", "동대문구", "종로구",
+  "서대문구", "성북구", "중랑구", "금천구", "도봉구",
+];
+
+async function getData(selectedDistricts: string[], selectedCategories: string[]) {
   const supabase = createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
     { db: { schema: "public" }, global: { headers: {} } }
   );
 
-  const { data: clinics } = await supabase
-    .from("clinics")
-    .select("*")
-    .order("name_ko");
+  const hasFilter = selectedDistricts.length > 0 || selectedCategories.length > 0;
 
+  /* ── 구별 클리닉 수 (항상 조회) ── */
+  const { data: allClinicsForCount } = await supabase
+    .from("clinics")
+    .select("id, district_ko");
+
+  const districtCounts: Record<string, number> = {};
+  SEOUL_DISTRICTS.forEach((d) => (districtCounts[d] = 0));
+  (allClinicsForCount || []).forEach((c: any) => {
+    if (c.district_ko) {
+      const d = c.district_ko.split(" ")[0];
+      if (districtCounts[d] !== undefined) districtCounts[d]++;
+    }
+  });
+  const totalCount = allClinicsForCount?.length || 0;
+
+  /* ── 시술 카테고리 (항상 조회) ── */
   const { data: standards } = await supabase
     .from("standard_treatments")
     .select("id, name_ko, category_ko, category_order")
@@ -28,59 +50,91 @@ async function getData() {
   });
   const categoryNames = Array.from(categorySet.keys());
 
-  const { data: allTreatments } = await supabase
-    .from("treatments")
-    .select("id, name_ko, standard_treatment_id")
-    .limit(5000);
+  /* ── 필터 없으면 여기서 리턴 (클리닉 로딩 안 함) ── */
+  if (!hasFilter) {
+    return {
+      clinics: [],
+      totalCount,
+      districtCounts,
+      categoryNames,
+      hasFilter: false,
+    };
+  }
 
-  const { data: allClinicTreatments1 } = await supabase
-    .from("clinic_treatments")
-    .select("clinic_id, treatment_id")
-    .range(0, 999);
-  const { data: allClinicTreatments2 } = await supabase
-    .from("clinic_treatments")
-    .select("clinic_id, treatment_id")
-    .range(1000, 1999);
-  const allClinicTreatments = [
-    ...(allClinicTreatments1 || []),
-    ...(allClinicTreatments2 || []),
-  ];
+  /* ── 필터 있을 때만 클리닉 로딩 ── */
+  let clinicQuery = supabase
+    .from("clinics")
+    .select("*")
+    .order("name_ko");
 
-  const treatmentToStdId: Record<number, string> = {};
-  const treatmentToName: Record<number, string> = {};
-  (allTreatments || []).forEach((t: any) => {
-    treatmentToName[t.id] = t.name_ko;
-    if (t.standard_treatment_id) {
-      treatmentToStdId[t.id] = t.standard_treatment_id;
-    }
-  });
+  if (selectedDistricts.length > 0) {
+    // district_ko가 선택된 구로 시작하는 것만
+    const orFilter = selectedDistricts
+      .map((d) => `district_ko.like.${d}%`)
+      .join(",");
+    clinicQuery = clinicQuery.or(orFilter);
+  }
 
-  const stdIdToCategory: Record<string, string> = {};
-  (standards || []).forEach((s: any) => {
-    stdIdToCategory[s.id] = s.category_ko;
-  });
+  const { data: clinics } = await clinicQuery;
 
-  const categoryMap: Record<string, Set<number>> = {};
-  (allClinicTreatments || []).forEach((ct: any) => {
-    const stdId = treatmentToStdId[ct.treatment_id];
-    if (stdId) {
-      const cat = stdIdToCategory[stdId];
-      if (cat) {
-        if (!categoryMap[cat]) categoryMap[cat] = new Set();
-        categoryMap[cat].add(ct.clinic_id);
+  /* ── 카테고리 필터용 데이터 (카테고리 선택 시에만) ── */
+  let categoryMap: Record<string, number[]> = {};
+
+  if (selectedCategories.length > 0) {
+    const { data: allTreatments } = await supabase
+      .from("treatments")
+      .select("id, name_ko, standard_treatment_id")
+      .limit(5000);
+
+    const { data: allClinicTreatments1 } = await supabase
+      .from("clinic_treatments")
+      .select("clinic_id, treatment_id")
+      .range(0, 999);
+    const { data: allClinicTreatments2 } = await supabase
+      .from("clinic_treatments")
+      .select("clinic_id, treatment_id")
+      .range(1000, 1999);
+    const allClinicTreatments = [
+      ...(allClinicTreatments1 || []),
+      ...(allClinicTreatments2 || []),
+    ];
+
+    const treatmentToStdId: Record<number, string> = {};
+    (allTreatments || []).forEach((t: any) => {
+      if (t.standard_treatment_id) {
+        treatmentToStdId[t.id] = t.standard_treatment_id;
       }
-    }
-  });
+    });
 
-  const categoryClinicCount: Record<string, number> = {};
-  Object.entries(categoryMap).forEach(([cat, clinicSet]) => {
-    categoryClinicCount[cat] = clinicSet.size;
-  });
+    const stdIdToCategory: Record<string, string> = {};
+    (standards || []).forEach((s: any) => {
+      stdIdToCategory[s.id] = s.category_ko;
+    });
+
+    const catMap: Record<string, Set<number>> = {};
+    (allClinicTreatments || []).forEach((ct: any) => {
+      const stdId = treatmentToStdId[ct.treatment_id];
+      if (stdId) {
+        const cat = stdIdToCategory[stdId];
+        if (cat) {
+          if (!catMap[cat]) catMap[cat] = new Set();
+          catMap[cat].add(ct.clinic_id);
+        }
+      }
+    });
+
+    categoryMap = Object.fromEntries(
+      Object.entries(catMap).map(([k, v]) => [k, Array.from(v)])
+    );
+  }
+
+  /* ── 시술 태그 데이터 (필터된 클리닉용) ── */
+  const clinicIds = (clinics || []).map((c: any) => c.id);
 
   const { data: clinicSpecs } = await supabase
     .from("clinic_specialties")
     .select("clinic_id, specialty_ko")
-    .limit(5000);
+    .in("clinic_id", clinicIds.length > 0 ? clinicIds : [0]);
 
   const clinicSpecMap: Record<number, string[]> = {};
   (clinicSpecs || []).forEach((cs: any) => {
@@ -90,16 +144,23 @@ async function getData() {
     }
   });
 
-  Object.keys(clinicSpecMap).forEach((cid) => {
-    clinicSpecMap[Number(cid)].sort((a, b) => {
-      const countA = categoryClinicCount[a] || 999;
-      const countB = categoryClinicCount[b] || 999;
-      return countA - countB;
-    });
+  const { data: filteredClinicTreatments } = await supabase
+    .from("clinic_treatments")
+    .select("clinic_id, treatment_id")
+    .in("clinic_id", clinicIds.length > 0 ? clinicIds : [0]);
+
+  const { data: allTreatmentsForNames } = await supabase
+    .from("treatments")
+    .select("id, name_ko")
+    .limit(5000);
+
+  const treatmentToName: Record<number, string> = {};
+  (allTreatmentsForNames || []).forEach((t: any) => {
+    treatmentToName[t.id] = t.name_ko;
   });
 
   const clinicTreatmentNames: Record<number, string[]> = {};
-  (allClinicTreatments || []).forEach((ct: any) => {
+  (filteredClinicTreatments || []).forEach((ct: any) => {
     const name = treatmentToName[ct.treatment_id];
     if (name) {
       if (!clinicTreatmentNames[ct.clinic_id])
@@ -110,24 +171,30 @@ async function getData() {
     }
   });
 
-  const clinicsWithInfo = (clinics || []).map((c: any) => ({
+  let clinicsWithInfo = (clinics || []).map((c: any) => ({
     ...c,
     specialties: clinicSpecMap[c.id] || [],
     treatmentNames: (clinicTreatmentNames[c.id] || []).sort(),
   }));
 
-  const districtSet = new Set<string>();
-  (clinics || []).forEach((c: any) => {
-    if (c.district_ko) districtSet.add(c.district_ko.split(" ")[0]);
-  });
+  /* ── 카테고리 필터 적용 ── */
+  if (selectedCategories.length > 0) {
+    const sets = selectedCategories
+      .map((cat) => new Set(categoryMap[cat] || []))
+      .filter((s) => s.size > 0);
+    if (sets.length > 0) {
+      clinicsWithInfo = clinicsWithInfo.filter((c: any) =>
+        sets.every((s) => s.has(c.id))
+      );
+    }
+  }
 
   return {
     clinics: clinicsWithInfo,
-    districts: Array.from(districtSet).sort(),
+    totalCount,
+    districtCounts,
     categoryNames,
-    categoryMap: Object.fromEntries(
-      Object.entries(categoryMap).map(([k, v]) => [k, Array.from(v)])
-    ),
+    hasFilter: true,
   };
 }
 
@@ -137,7 +204,6 @@ export default async function ClinicsPage({
   searchParams: Promise<{ district?: string; category?: string }>;
 }) {
   const params = await searchParams;
-  const { clinics, districts, categoryNames, categoryMap } = await getData();
 
   const selectedDistricts = params.district
     ? decodeURIComponent(params.district).split(",").filter(Boolean)
@@ -146,27 +212,11 @@ export default async function ClinicsPage({
     ? decodeURIComponent(params.category).split(",").filter(Boolean)
     : [];
 
-  let filtered = clinics;
-
-  if (selectedDistricts.length > 0) {
-    filtered = filtered.filter((c: any) =>
-      c.district_ko &&
-      selectedDistricts.some((d) => c.district_ko.startsWith(d))
-    );
-  }
-
-  if (selectedCategories.length > 0) {
-    const sets = selectedCategories
-      .map((cat) => new Set(categoryMap[cat] || []))
-      .filter((s) => s.size > 0);
-    if (sets.length > 0)
-      filtered = filtered.filter((c: any) => sets.every((s) => s.has(c.id)));
-  }
+  const { clinics, totalCount, districtCounts, categoryNames, hasFilter } =
+    await getData(selectedDistricts, selectedCategories);
 
   function toggleUrl(key: string, val: string, cur: string[]) {
-    const nl = cur.includes(val)
-      ? cur.filter((v) => v !== val)
-      : [...cur, val];
+    const nl = cur.includes(val) ? cur.filter((v) => v !== val) : [...cur, val];
     const p = new URLSearchParams();
     const d = key === "district" ? nl : selectedDistricts;
     const ca = key === "category" ? nl : selectedCategories;
@@ -186,9 +236,6 @@ export default async function ClinicsPage({
     return qs ? `/clinics?${qs}` : "/clinics";
   }
 
-  const hasFilter =
-    selectedDistricts.length > 0 || selectedCategories.length > 0;
-
   const MAX_TAG_CHARS = 80;
 
   return (
@@ -202,30 +249,22 @@ export default async function ClinicsPage({
             클리닉 / Clinics
           </h1>
           <p className="text-gray-400 text-xs sm:text-sm mt-0.5">
-            서울 {filtered.length}개 클리닉
-            {hasFilter && ` (전체 ${clinics.length}개 중)`}
+            서울 미용클리닉 {totalCount.toLocaleString()}개
+            {hasFilter && ` → ${clinics.length.toLocaleString()}개 검색됨`}
           </p>
         </div>
       </header>
 
       <section className="max-w-7xl mx-auto py-5 sm:py-8 px-4 sm:px-6">
+        {/* ── 필터 영역 ── */}
         <div className="mb-6 sm:mb-8 space-y-3 sm:space-y-4">
+          {/* 지역 필터 */}
           <div>
             <h3 className="text-xs sm:text-sm font-bold text-gray-500 mb-2">
-              📍 지역
+              📍 지역 선택
             </h3>
             <div className="flex flex-wrap gap-1.5 sm:gap-2">
-              <Link
-                href={clearUrl("district")}
-                className={`px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-full text-xs sm:text-sm font-medium border transition ${
-                  selectedDistricts.length === 0
-                    ? "bg-ui-primary text-white border-ui-primary"
-                    : "bg-white text-gray-600 border-gray-300 hover:border-ui-primary"
-                }`}
-              >
-                전체
-              </Link>
-              {districts.map((d) => (
+              {SEOUL_DISTRICTS.map((d) => (
                 <Link
                   key={d}
                   href={toggleUrl("district", d, selectedDistricts)}
@@ -236,26 +275,22 @@ export default async function ClinicsPage({
                   }`}
                 >
                   {d}
+                  <span className={`ml-1 ${
+                    selectedDistricts.includes(d) ? "text-blue-200" : "text-gray-400"
+                  }`}>
+                    {districtCounts[d]?.toLocaleString()}
+                  </span>
                 </Link>
               ))}
             </div>
           </div>
 
+          {/* 시술 카테고리 필터 */}
           <div>
             <h3 className="text-xs sm:text-sm font-bold text-gray-500 mb-2">
               💉 시술 카테고리
             </h3>
             <div className="flex flex-wrap gap-1.5 sm:gap-2">
-              <Link
-                href={clearUrl("category")}
-                className={`px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-full text-xs sm:text-sm font-medium border transition ${
-                  selectedCategories.length === 0
-                    ? "bg-ui-secondary text-white border-ui-secondary"
-                    : "bg-white text-gray-600 border-gray-300 hover:border-ui-secondary"
-                }`}
-              >
-                전체
-              </Link>
               {categoryNames.map((cat) => (
                 <Link
                   key={cat}
@@ -272,6 +307,7 @@ export default async function ClinicsPage({
             </div>
           </div>
 
+          {/* 선택된 필터 태그 */}
           {hasFilter && (
             <div className="flex flex-wrap items-center gap-1.5 sm:gap-2 pt-2">
               {selectedDistricts.map((d) => (
@@ -302,27 +338,32 @@ export default async function ClinicsPage({
           )}
         </div>
 
-        {filtered.length === 0 ? (
+        {/* ── 결과 영역 ── */}
+        {!hasFilter ? (
+          <div className="text-center py-16 sm:py-24">
+            <p className="text-4xl sm:text-5xl mb-4">🏥</p>
+            <p className="text-gray-500 text-base sm:text-lg font-medium">
+              검색 조건을 선택해주세요
+            </p>
+            <p className="text-gray-400 text-xs sm:text-sm mt-2">
+              지역 또는 시술 카테고리를 선택하면 클리닉이 표시됩니다
+            </p>
+          </div>
+        ) : clinics.length === 0 ? (
           <p className="text-gray-500 text-center py-12">
             선택한 조건에 해당하는 클리닉이 없습니다.
           </p>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
-            {filtered.map((c: any) => {
+            {clinics.map((c: any) => {
               const greenTags: string[] = c.specialties;
               const blueTags: string[] = c.treatmentNames.filter(
                 (name: string) => !greenTags.includes(name)
               );
 
               const allTags = [
-                ...greenTags.map((t: string) => ({
-                  text: t,
-                  color: "primary",
-                })),
-                ...blueTags.map((t: string) => ({
-                  text: t,
-                  color: "accent",
-                })),
+                ...greenTags.map((t: string) => ({ text: t, color: "primary" })),
+                ...blueTags.map((t: string) => ({ text: t, color: "accent" })),
               ];
 
               let charCount = 0;
@@ -345,9 +386,10 @@ export default async function ClinicsPage({
                   <h2 className="text-lg sm:text-xl font-bold">
                     {c.name_ko || c.name_en}
                   </h2>
-                  <p className="text-gray-500 text-xs sm:text-sm">
-                    {c.name_en}
-                  </p>
+                  <p className="text-gray-500 text-xs sm:text-sm">{c.name_en}</p>
+                  {c.district_ko && (
+                    <p className="text-gray-400 text-xs mt-1">📍 {c.district_ko}</p>
+                  )}
 
                   {allTags.length > 0 && (
                     <div className="flex flex-wrap items-center gap-1 sm:gap-1.5 mt-2 sm:mt-3">
