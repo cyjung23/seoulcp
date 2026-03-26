@@ -30,20 +30,34 @@ async function getData(
   const hasFilter =
     selectedDistricts.length > 0 || selectedCategories.length > 0;
 
-  /* ── 구별 클리닉 수 ── */
-  const { data: allClinicsForCount } = await supabase
+  // 전체 클리닉 수 조회 (count only, 데이터 전송 없음)
+  const { count: totalCount } = await supabase
     .from("clinics")
-    .select("id, district_ko");
+    .select("*", { count: "exact", head: true });
+
+  // 구별 클리닉 수 조회 (id, district_ko만)
+  const allClinicsPages: any[] = [];
+  let from = 0;
+  const PAGE_SIZE = 1000;
+  while (true) {
+    const { data } = await supabase
+      .from("clinics")
+      .select("id, district_ko")
+      .range(from, from + PAGE_SIZE - 1);
+    if (!data || data.length === 0) break;
+    allClinicsPages.push(...data);
+    if (data.length < PAGE_SIZE) break;
+    from += PAGE_SIZE;
+  }
 
   const districtCounts: Record<string, number> = {};
   SEOUL_DISTRICTS.forEach((d) => (districtCounts[d] = 0));
-  (allClinicsForCount || []).forEach((c: any) => {
+  allClinicsPages.forEach((c: any) => {
     if (c.district_ko) {
       const d = c.district_ko.split(" ")[0];
       if (districtCounts[d] !== undefined) districtCounts[d]++;
     }
   });
-  const totalCount = allClinicsForCount?.length || 0;
 
   /* ── 카테고리 목록 (시술 / 수술 분리) ── */
   const { data: standards } = await supabase
