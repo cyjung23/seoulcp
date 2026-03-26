@@ -6,7 +6,8 @@ export const dynamic = "force-dynamic";
 async function getData() {
   const supabase = createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    { db: { schema: 'public' }, global: { headers: {} } }
   );
 
   const { data: clinics } = await supabase
@@ -32,10 +33,18 @@ async function getData() {
     .select("id, name_ko, standard_treatment_id")
     .limit(5000);
 
-  const { data: allClinicTreatments } = await supabase
+  const { data: allClinicTreatments1 } = await supabase
     .from("clinic_treatments")
     .select("clinic_id, treatment_id")
-    .limit(10000);
+    .range(0, 999);
+  const { data: allClinicTreatments2 } = await supabase
+    .from("clinic_treatments")
+    .select("clinic_id, treatment_id")
+    .range(1000, 1999);
+  const allClinicTreatments = [
+    ...(allClinicTreatments1 || []),
+    ...(allClinicTreatments2 || []),
+  ];
 
   const treatmentToStdId: Record<number, string> = {};
   const treatmentToName: Record<number, string> = {};
