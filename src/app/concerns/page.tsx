@@ -71,15 +71,15 @@ export default async function ConcernsPage({
 
   return (
     <div className="min-h-screen">
-      <header className="bg-base-dark text-white py-4 px-6">
-        <div className="max-w-6xl mx-auto">
+      <header className="bg-base-dark text-white py-3 px-4 sm:px-6">
+        <div className="max-w-7xl mx-auto">
           <Link href="/" className="text-gray-400 hover:text-white text-sm">
             ← Home
           </Link>
-          <h1 className="text-2xl font-bold mt-1">
+          <h1 className="text-xl sm:text-2xl font-bold mt-1">
             {selectedCategory ? selectedCategory : "전체 고민"}
           </h1>
-          <p className="text-gray-400 text-sm mt-0.5">
+          <p className="text-gray-400 text-xs sm:text-sm mt-0.5">
             {selectedCategory
               ? `${
                   CATEGORY_ORDER.find((c) => c.ko === selectedCategory)?.en ||
@@ -90,11 +90,11 @@ export default async function ConcernsPage({
         </div>
       </header>
 
-      <section className="max-w-6xl mx-auto py-6 px-6">
-        <div className="flex flex-wrap gap-2 mb-6">
+      <section className="max-w-7xl mx-auto py-4 sm:py-6 px-4 sm:px-6">
+        <div className="flex flex-wrap gap-1.5 sm:gap-2 mb-5 sm:mb-6">
           <Link
             href="/concerns"
-            className={`px-3 py-1.5 rounded-full text-sm font-medium border transition ${
+            className={`px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-full text-xs sm:text-sm font-medium border transition ${
               !selectedCategory
                 ? "bg-ui-primary text-white border-ui-primary"
                 : "bg-white text-gray-600 border-gray-300 hover:border-ui-primary"
@@ -109,7 +109,7 @@ export default async function ConcernsPage({
               <Link
                 key={cat.ko}
                 href={`/concerns?category=${encodeURIComponent(cat.ko)}`}
-                className={`px-3 py-1.5 rounded-full text-sm font-medium border transition ${
+                className={`px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-full text-xs sm:text-sm font-medium border transition ${
                   isActive
                     ? "bg-ui-primary text-white border-ui-primary"
                     : "bg-white text-gray-600 border-gray-300 hover:border-ui-primary"
@@ -126,27 +126,27 @@ export default async function ConcernsPage({
           const items = grouped[cat.ko] || [];
           if (items.length === 0) return null;
           return (
-            <div key={cat.ko} className="mb-8">
+            <div key={cat.ko} className="mb-6 sm:mb-8">
               {!selectedCategory && (
-                <div className="flex items-center gap-2 mb-4 border-b pb-2">
-                  <span className="text-xl">{cat.icon}</span>
-                  <h2 className="text-xl font-bold">{cat.ko}</h2>
-                  <span className="text-sm text-gray-400">{cat.en}</span>
-                  <span className="text-sm text-gray-400 ml-auto">
+                <div className="flex items-center gap-2 mb-3 sm:mb-4 border-b pb-2">
+                  <span className="text-lg sm:text-xl">{cat.icon}</span>
+                  <h2 className="text-lg sm:text-xl font-bold">{cat.ko}</h2>
+                  <span className="text-xs sm:text-sm text-gray-400 hidden sm:inline">{cat.en}</span>
+                  <span className="text-xs sm:text-sm text-gray-400 ml-auto">
                     {items.length}개
                   </span>
                 </div>
               )}
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
                 {items.map((c) => (
                   <Link
                     key={c.id}
                     href={`/concerns/${encodeURIComponent(c.name_ko)}`}
-                    className="border rounded-lg p-4 hover:shadow-md hover:border-ui-primary transition block"
+                    className="border rounded-lg p-3 sm:p-4 hover:shadow-md hover:border-ui-primary transition block"
                   >
-                    <h3 className="font-bold text-lg">{c.name_ko}</h3>
-                    <p className="text-gray-500 text-sm">{c.name_en}</p>
-                    <p className="text-ui-primary font-semibold mt-2">
+                    <h3 className="font-bold text-base sm:text-lg">{c.name_ko}</h3>
+                    <p className="text-gray-500 text-xs sm:text-sm">{c.name_en}</p>
+                    <p className="text-ui-primary font-semibold mt-1.5 sm:mt-2 text-sm">
                       {c.treatmentCount} treatment
                       {c.treatmentCount !== 1 ? "s" : ""}
                     </p>

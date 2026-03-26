@@ -7,7 +7,7 @@ async function getData() {
   const supabase = createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-    { db: { schema: 'public' }, global: { headers: {} } }
+    { db: { schema: "public" }, global: { headers: {} } }
   );
 
   const { data: clinics } = await supabase
@@ -102,7 +102,8 @@ async function getData() {
   (allClinicTreatments || []).forEach((ct: any) => {
     const name = treatmentToName[ct.treatment_id];
     if (name) {
-      if (!clinicTreatmentNames[ct.clinic_id]) clinicTreatmentNames[ct.clinic_id] = [];
+      if (!clinicTreatmentNames[ct.clinic_id])
+        clinicTreatmentNames[ct.clinic_id] = [];
       if (!clinicTreatmentNames[ct.clinic_id].includes(name)) {
         clinicTreatmentNames[ct.clinic_id].push(name);
       }
@@ -149,7 +150,8 @@ export default async function ClinicsPage({
 
   if (selectedDistricts.length > 0) {
     filtered = filtered.filter((c: any) =>
-      c.district_ko && selectedDistricts.some((d) => c.district_ko.startsWith(d))
+      c.district_ko &&
+      selectedDistricts.some((d) => c.district_ko.startsWith(d))
     );
   }
 
@@ -162,7 +164,9 @@ export default async function ClinicsPage({
   }
 
   function toggleUrl(key: string, val: string, cur: string[]) {
-    const nl = cur.includes(val) ? cur.filter((v) => v !== val) : [...cur, val];
+    const nl = cur.includes(val)
+      ? cur.filter((v) => v !== val)
+      : [...cur, val];
     const p = new URLSearchParams();
     const d = key === "district" ? nl : selectedDistricts;
     const ca = key === "category" ? nl : selectedCategories;
@@ -182,33 +186,38 @@ export default async function ClinicsPage({
     return qs ? `/clinics?${qs}` : "/clinics";
   }
 
-  const hasFilter = selectedDistricts.length > 0 || selectedCategories.length > 0;
+  const hasFilter =
+    selectedDistricts.length > 0 || selectedCategories.length > 0;
 
   const MAX_TAG_CHARS = 80;
 
   return (
     <div className="min-h-screen">
-      <header className="bg-base-dark text-white py-4 px-6">
-        <div className="max-w-5xl mx-auto">
+      <header className="bg-base-dark text-white py-3 px-4 sm:px-6">
+        <div className="max-w-7xl mx-auto">
           <Link href="/" className="text-gray-400 hover:text-white text-sm">
             ← Home
           </Link>
-          <h1 className="text-2xl font-bold mt-1">클리닉 / Clinics</h1>
-          <p className="text-gray-400 mt-1">
+          <h1 className="text-xl sm:text-2xl font-bold mt-1">
+            클리닉 / Clinics
+          </h1>
+          <p className="text-gray-400 text-xs sm:text-sm mt-0.5">
             서울 {filtered.length}개 클리닉
             {hasFilter && ` (전체 ${clinics.length}개 중)`}
           </p>
         </div>
       </header>
 
-      <section className="max-w-5xl mx-auto py-8 px-6">
-        <div className="mb-8 space-y-4">
+      <section className="max-w-7xl mx-auto py-5 sm:py-8 px-4 sm:px-6">
+        <div className="mb-6 sm:mb-8 space-y-3 sm:space-y-4">
           <div>
-            <h3 className="text-sm font-bold text-gray-500 mb-2">📍 지역</h3>
-            <div className="flex flex-wrap gap-2">
+            <h3 className="text-xs sm:text-sm font-bold text-gray-500 mb-2">
+              📍 지역
+            </h3>
+            <div className="flex flex-wrap gap-1.5 sm:gap-2">
               <Link
                 href={clearUrl("district")}
-                className={`px-3 py-1.5 rounded-full text-sm font-medium border transition ${
+                className={`px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-full text-xs sm:text-sm font-medium border transition ${
                   selectedDistricts.length === 0
                     ? "bg-ui-primary text-white border-ui-primary"
                     : "bg-white text-gray-600 border-gray-300 hover:border-ui-primary"
@@ -220,7 +229,7 @@ export default async function ClinicsPage({
                 <Link
                   key={d}
                   href={toggleUrl("district", d, selectedDistricts)}
-                  className={`px-3 py-1.5 rounded-full text-sm font-medium border transition ${
+                  className={`px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-full text-xs sm:text-sm font-medium border transition ${
                     selectedDistricts.includes(d)
                       ? "bg-ui-primary text-white border-ui-primary"
                       : "bg-white text-gray-600 border-gray-300 hover:border-ui-primary"
@@ -233,11 +242,13 @@ export default async function ClinicsPage({
           </div>
 
           <div>
-            <h3 className="text-sm font-bold text-gray-500 mb-2">💉 시술 카테고리</h3>
-            <div className="flex flex-wrap gap-2">
+            <h3 className="text-xs sm:text-sm font-bold text-gray-500 mb-2">
+              💉 시술 카테고리
+            </h3>
+            <div className="flex flex-wrap gap-1.5 sm:gap-2">
               <Link
                 href={clearUrl("category")}
-                className={`px-3 py-1.5 rounded-full text-sm font-medium border transition ${
+                className={`px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-full text-xs sm:text-sm font-medium border transition ${
                   selectedCategories.length === 0
                     ? "bg-ui-secondary text-white border-ui-secondary"
                     : "bg-white text-gray-600 border-gray-300 hover:border-ui-secondary"
@@ -249,7 +260,7 @@ export default async function ClinicsPage({
                 <Link
                   key={cat}
                   href={toggleUrl("category", cat, selectedCategories)}
-                  className={`px-3 py-1.5 rounded-full text-sm font-medium border transition ${
+                  className={`px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-full text-xs sm:text-sm font-medium border transition ${
                     selectedCategories.includes(cat)
                       ? "bg-ui-secondary text-white border-ui-secondary"
                       : "bg-white text-gray-600 border-gray-300 hover:border-ui-secondary"
@@ -262,12 +273,12 @@ export default async function ClinicsPage({
           </div>
 
           {hasFilter && (
-            <div className="flex flex-wrap items-center gap-2 pt-2">
+            <div className="flex flex-wrap items-center gap-1.5 sm:gap-2 pt-2">
               {selectedDistricts.map((d) => (
                 <Link
                   key={`d-${d}`}
                   href={toggleUrl("district", d, selectedDistricts)}
-                  className="inline-flex items-center gap-1 px-2.5 py-1 bg-gray-100 text-gray-700 rounded-full text-xs hover:bg-gray-200"
+                  className="inline-flex items-center gap-1 px-2 sm:px-2.5 py-0.5 sm:py-1 bg-gray-100 text-gray-700 rounded-full text-xs hover:bg-gray-200"
                 >
                   📍 {d} <span className="text-gray-400">✕</span>
                 </Link>
@@ -276,14 +287,14 @@ export default async function ClinicsPage({
                 <Link
                   key={`c-${cat}`}
                   href={toggleUrl("category", cat, selectedCategories)}
-                  className="inline-flex items-center gap-1 px-2.5 py-1 bg-gray-100 text-gray-700 rounded-full text-xs hover:bg-gray-200"
+                  className="inline-flex items-center gap-1 px-2 sm:px-2.5 py-0.5 sm:py-1 bg-gray-100 text-gray-700 rounded-full text-xs hover:bg-gray-200"
                 >
                   💉 {cat} <span className="text-gray-400">✕</span>
                 </Link>
               ))}
               <Link
                 href="/clinics"
-                className="text-sm text-ui-primary hover:opacity-80 underline ml-2"
+                className="text-xs sm:text-sm text-ui-primary hover:opacity-80 underline ml-2"
               >
                 모든 필터 초기화
               </Link>
@@ -296,7 +307,7 @@ export default async function ClinicsPage({
             선택한 조건에 해당하는 클리닉이 없습니다.
           </p>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
             {filtered.map((c: any) => {
               const greenTags: string[] = c.specialties;
               const blueTags: string[] = c.treatmentNames.filter(
@@ -304,8 +315,14 @@ export default async function ClinicsPage({
               );
 
               const allTags = [
-                ...greenTags.map((t: string) => ({ text: t, color: "primary" })),
-                ...blueTags.map((t: string) => ({ text: t, color: "accent" })),
+                ...greenTags.map((t: string) => ({
+                  text: t,
+                  color: "primary",
+                })),
+                ...blueTags.map((t: string) => ({
+                  text: t,
+                  color: "accent",
+                })),
               ];
 
               let charCount = 0;
@@ -323,29 +340,31 @@ export default async function ClinicsPage({
                 <Link
                   key={c.id}
                   href={`/clinics/${c.id}`}
-                  className="border rounded-xl px-5 py-4 hover:shadow-lg transition block min-h-48 max-h-72 overflow-hidden"
+                  className="border rounded-xl px-4 sm:px-5 py-3 sm:py-4 hover:shadow-lg transition block min-h-40 sm:min-h-48 max-h-72 overflow-hidden"
                 >
-                  <h2 className="text-xl font-bold">
+                  <h2 className="text-lg sm:text-xl font-bold">
                     {c.name_ko || c.name_en}
                   </h2>
-                  <p className="text-gray-500 text-sm">{c.name_en}</p>
+                  <p className="text-gray-500 text-xs sm:text-sm">
+                    {c.name_en}
+                  </p>
 
                   {allTags.length > 0 && (
-                    <div className="flex flex-wrap items-center gap-1.5 mt-3">
+                    <div className="flex flex-wrap items-center gap-1 sm:gap-1.5 mt-2 sm:mt-3">
                       {visibleTags.map((tag, i) => (
                         <span
                           key={i}
                           className={
                             tag.color === "primary"
-                              ? "bg-blue-50 text-ui-primary px-2.5 py-0.5 rounded-full text-xs font-medium"
-                              : "bg-green-50 text-ui-accent px-2.5 py-0.5 rounded-full text-xs font-medium"
+                              ? "bg-blue-50 text-ui-primary px-2 sm:px-2.5 py-0.5 rounded-full text-[10px] sm:text-xs font-medium"
+                              : "bg-green-50 text-ui-accent px-2 sm:px-2.5 py-0.5 rounded-full text-[10px] sm:text-xs font-medium"
                           }
                         >
                           {tag.text}
                         </span>
                       ))}
                       {remaining > 0 && (
-                        <span className="bg-amber-100 text-amber-700 px-2.5 py-0.5 rounded-full text-xs font-medium">
+                        <span className="bg-amber-100 text-amber-700 px-2 sm:px-2.5 py-0.5 rounded-full text-[10px] sm:text-xs font-medium">
                           +{remaining}개
                         </span>
                       )}

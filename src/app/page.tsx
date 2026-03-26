@@ -55,25 +55,25 @@ export default async function Home() {
   return (
     <div className="min-h-screen">
       {/* 카테고리 그리드 */}
-      <section className="max-w-6xl mx-auto py-8 px-6">
-        <h2 className="text-xl font-bold text-gray-800 mb-5">
+      <section className="max-w-7xl mx-auto py-6 px-4 sm:px-6">
+        <h2 className="text-xl font-bold text-gray-800 mb-4">
           고민별 카테고리
         </h2>
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4">
           {CATEGORIES.map((cat) => {
             const count = groupCounts[cat.ko] || 0;
             return (
               <Link
                 key={cat.id}
                 href={`/concerns?category=${encodeURIComponent(cat.ko)}`}
-                className={`border rounded-xl p-5 hover:shadow-lg transition block ${cat.color}`}
+                className={`border rounded-xl p-4 sm:p-5 hover:shadow-lg transition block ${cat.color}`}
               >
-                <span className="text-3xl">{cat.icon}</span>
-                <h3 className="font-bold text-base mt-3 leading-snug">
+                <span className="text-2xl sm:text-3xl">{cat.icon}</span>
+                <h3 className="font-bold text-sm sm:text-base mt-2 sm:mt-3 leading-snug">
                   {cat.ko}
                 </h3>
-                <p className="text-xs mt-1 opacity-70">{cat.en}</p>
-                <p className="text-sm font-semibold mt-2">
+                <p className="text-[10px] sm:text-xs mt-1 opacity-70">{cat.en}</p>
+                <p className="text-xs sm:text-sm font-semibold mt-2">
                   {count}개 고민
                 </p>
               </Link>
@@ -83,46 +83,46 @@ export default async function Home() {
       </section>
 
       {/* 바로가기 */}
-      <section className="max-w-6xl mx-auto pb-10 px-6">
-        <h2 className="text-xl font-bold text-gray-800 mb-5">바로가기</h2>
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+      <section className="max-w-7xl mx-auto pb-8 px-4 sm:px-6">
+        <h2 className="text-xl font-bold text-gray-800 mb-4">바로가기</h2>
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4">
           <Link
             href="/treatments"
-            className="border rounded-xl p-6 hover:shadow-lg hover:border-ui-primary transition block text-center"
+            className="border rounded-xl p-4 sm:p-6 hover:shadow-lg hover:border-ui-primary transition block text-center"
           >
-            <span className="text-3xl">💉</span>
-            <h3 className="font-bold mt-3">시술</h3>
-            <p className="text-gray-500 text-sm mt-1">
+            <span className="text-2xl sm:text-3xl">💉</span>
+            <h3 className="font-bold mt-2 sm:mt-3 text-sm sm:text-base">시술</h3>
+            <p className="text-gray-500 text-xs sm:text-sm mt-1">
               {treatmentCount}가지 시술 정보
             </p>
           </Link>
           <Link
             href="/surgeries"
-            className="border rounded-xl p-6 hover:shadow-lg hover:border-ui-primary transition block text-center"
+            className="border rounded-xl p-4 sm:p-6 hover:shadow-lg hover:border-ui-primary transition block text-center"
           >
-            <span className="text-3xl">🔪</span>
-            <h3 className="font-bold mt-3">수술</h3>
-            <p className="text-gray-500 text-sm mt-1">
+            <span className="text-2xl sm:text-3xl">🔪</span>
+            <h3 className="font-bold mt-2 sm:mt-3 text-sm sm:text-base">수술</h3>
+            <p className="text-gray-500 text-xs sm:text-sm mt-1">
               성형/지방 수술 정보
             </p>
           </Link>
           <Link
             href="/devices"
-            className="border rounded-xl p-6 hover:shadow-lg hover:border-ui-secondary transition block text-center"
+            className="border rounded-xl p-4 sm:p-6 hover:shadow-lg hover:border-ui-secondary transition block text-center"
           >
-            <span className="text-3xl">🔬</span>
-            <h3 className="font-bold mt-3">장비</h3>
-            <p className="text-gray-500 text-sm mt-1">
+            <span className="text-2xl sm:text-3xl">🔬</span>
+            <h3 className="font-bold mt-2 sm:mt-3 text-sm sm:text-base">장비</h3>
+            <p className="text-gray-500 text-xs sm:text-sm mt-1">
               {deviceCount}개 미용 장비
             </p>
           </Link>
           <Link
             href="/clinics"
-            className="border rounded-xl p-6 hover:shadow-lg hover:border-ui-accent transition block text-center"
+            className="border rounded-xl p-4 sm:p-6 hover:shadow-lg hover:border-ui-accent transition block text-center"
           >
-            <span className="text-3xl">🏥</span>
-            <h3 className="font-bold mt-3">클리닉</h3>
-            <p className="text-gray-500 text-sm mt-1">
+            <span className="text-2xl sm:text-3xl">🏥</span>
+            <h3 className="font-bold mt-2 sm:mt-3 text-sm sm:text-base">클리닉</h3>
+            <p className="text-gray-500 text-xs sm:text-sm mt-1">
               서울 {clinicCount}개 클리닉
             </p>
           </Link>

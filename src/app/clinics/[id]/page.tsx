@@ -112,48 +112,58 @@ export default async function ClinicDetailPage({
 
   return (
     <div className="min-h-screen">
-      <header className="bg-base-dark text-white py-4 px-6">
-        <div className="max-w-5xl mx-auto">
+      <header className="bg-base-dark text-white py-3 px-4 sm:px-6">
+        <div className="max-w-7xl mx-auto">
           <Link
             href="/clinics"
             className="text-gray-400 hover:text-white text-sm"
           >
             ← 클리닉 목록
           </Link>
-          <h1 className="text-2xl font-bold mt-1">{clinic.name_ko}</h1>
-          <p className="text-gray-400 text-sm mt-0.5">{clinic.name_en}</p>
+          <h1 className="text-xl sm:text-2xl font-bold mt-1">
+            {clinic.name_ko}
+          </h1>
+          <p className="text-gray-400 text-xs sm:text-sm mt-0.5">
+            {clinic.name_en}
+          </p>
         </div>
       </header>
 
-      <section className="max-w-5xl mx-auto py-8 px-6">
-        <div className="border rounded-xl p-6 mb-8">
-          <h2 className="text-xl font-bold mb-4">기본 정보</h2>
+      <section className="max-w-7xl mx-auto py-5 sm:py-8 px-4 sm:px-6">
+        <div className="border rounded-xl p-4 sm:p-6 mb-6 sm:mb-8">
+          <h2 className="text-lg sm:text-xl font-bold mb-3 sm:mb-4">
+            기본 정보
+          </h2>
           {clinic.address_ko && (
-            <p className="text-gray-600 mb-2">📍 {clinic.address_ko}</p>
+            <p className="text-gray-600 text-sm mb-2">
+              📍 {clinic.address_ko}
+            </p>
           )}
           {clinic.phone && (
-            <p className="text-gray-600 mb-2">📞 {clinic.phone}</p>
+            <p className="text-gray-600 text-sm mb-2">📞 {clinic.phone}</p>
           )}
           {clinic.operating_hours && (
-            <p className="text-gray-600 mb-2">🕐 {clinic.operating_hours}</p>
+            <p className="text-gray-600 text-sm mb-2">
+              🕐 {clinic.operating_hours}
+            </p>
           )}
           {clinic.website && (
             <a
               href={clinic.website}
               target="_blank"
               rel="noopener noreferrer"
-              className="text-ui-secondary hover:underline"
+              className="text-ui-secondary hover:underline text-sm"
             >
               🔗 {clinic.website}
             </a>
           )}
 
           {specialties.length > 0 && (
-            <div className="flex flex-wrap gap-2 mt-4 pt-4 border-t">
+            <div className="flex flex-wrap gap-1.5 sm:gap-2 mt-4 pt-4 border-t">
               {specialties.map((spec: string, i: number) => (
                 <span
                   key={i}
-                  className="bg-blue-50 text-ui-primary px-3 py-1 rounded-full text-sm font-medium"
+                  className="bg-blue-50 text-ui-primary px-2.5 sm:px-3 py-0.5 sm:py-1 rounded-full text-xs sm:text-sm font-medium"
                 >
                   {spec}
                 </span>
@@ -163,14 +173,16 @@ export default async function ClinicDetailPage({
         </div>
 
         {treatments.length > 0 && (
-          <div className="mb-8">
-            <h2 className="text-xl font-bold mb-4">
+          <div className="mb-6 sm:mb-8">
+            <h2 className="text-lg sm:text-xl font-bold mb-3 sm:mb-4">
               💉 시술 목록 ({treatments.length})
             </h2>
             {treatmentCategories.map((cat) => (
-              <div key={cat} className="mb-4">
-                <h3 className="font-semibold text-gray-700 mb-2">{cat}</h3>
-                <div className="flex flex-wrap gap-2">
+              <div key={cat} className="mb-3 sm:mb-4">
+                <h3 className="font-semibold text-gray-700 text-sm sm:text-base mb-2">
+                  {cat}
+                </h3>
+                <div className="flex flex-wrap gap-1.5 sm:gap-2">
                   {treatments
                     .filter((t: any) => t.standard_category_ko === cat)
                     .sort(
@@ -183,10 +195,12 @@ export default async function ClinicDetailPage({
                         key={t.id}
                         href={
                           t.standard_name_ko
-                            ? `/treatments/${encodeURIComponent(t.standard_name_ko)}`
+                            ? `/treatments/${encodeURIComponent(
+                                t.standard_name_ko
+                              )}`
                             : "#"
                         }
-                        className="bg-green-50 text-ui-accent px-3 py-1 rounded-full text-sm hover:bg-green-100"
+                        className="bg-green-50 text-ui-accent px-2.5 sm:px-3 py-0.5 sm:py-1 rounded-full text-xs sm:text-sm hover:bg-green-100"
                       >
                         {t.name_ko}
                         {t.price_krw && (
@@ -203,21 +217,25 @@ export default async function ClinicDetailPage({
         )}
 
         {devices.length > 0 && (
-          <div className="mb-8">
-            <h2 className="text-xl font-bold mb-4">
+          <div className="mb-6 sm:mb-8">
+            <h2 className="text-lg sm:text-xl font-bold mb-3 sm:mb-4">
               🔬 보유 장비 ({devices.length})
             </h2>
             {deviceCategories.map((cat) => (
-              <div key={cat} className="mb-4">
-                <h3 className="font-semibold text-gray-700 mb-2">{cat}</h3>
-                <div className="flex flex-wrap gap-2">
+              <div key={cat} className="mb-3 sm:mb-4">
+                <h3 className="font-semibold text-gray-700 text-sm sm:text-base mb-2">
+                  {cat}
+                </h3>
+                <div className="flex flex-wrap gap-1.5 sm:gap-2">
                   {devices
                     .filter((d: any) => (d.category_ko || "기타") === cat)
                     .map((d: any) => (
                       <Link
                         key={d.id}
-                        href={`/devices/${encodeURIComponent(d.device_name_ko)}`}
-                        className="bg-blue-50 text-ui-secondary px-3 py-1 rounded-full text-sm hover:bg-blue-100"
+                        href={`/devices/${encodeURIComponent(
+                          d.device_name_ko
+                        )}`}
+                        className="bg-blue-50 text-ui-secondary px-2.5 sm:px-3 py-0.5 sm:py-1 rounded-full text-xs sm:text-sm hover:bg-blue-100"
                       >
                         {d.device_name_ko}
                       </Link>
@@ -229,16 +247,22 @@ export default async function ClinicDetailPage({
         )}
 
         {doctors.length > 0 && (
-          <div className="mb-8">
-            <h2 className="text-xl font-bold mb-4">
+          <div className="mb-6 sm:mb-8">
+            <h2 className="text-lg sm:text-xl font-bold mb-3 sm:mb-4">
               👨‍⚕️ 의료진 ({doctors.length})
             </h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
               {doctors.map((doc: any) => (
-                <div key={doc.id} className="border rounded-lg p-4">
-                  <p className="font-bold">{doc.name_ko}</p>
-                  <p className="text-gray-500 text-sm">{doc.name_en}</p>
-                  <p className="text-ui-secondary text-sm mt-1">{doc.title_ko}</p>
+                <div key={doc.id} className="border rounded-lg p-3 sm:p-4">
+                  <p className="font-bold text-sm sm:text-base">
+                    {doc.name_ko}
+                  </p>
+                  <p className="text-gray-500 text-xs sm:text-sm">
+                    {doc.name_en}
+                  </p>
+                  <p className="text-ui-secondary text-xs sm:text-sm mt-1">
+                    {doc.title_ko}
+                  </p>
                 </div>
               ))}
             </div>
