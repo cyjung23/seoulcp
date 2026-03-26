@@ -288,7 +288,7 @@ export default async function ClinicsPage({
             클리닉 / Clinics
           </h1>
           <p className="text-gray-400 text-xs sm:text-sm mt-0.5">
-            서울 미용클리닉 {totalCount.toLocaleString()}개
+            서울 미용클리닉 {(totalCount ?? 0).toLocaleString()}개
             {hasFilter && ` → ${clinics.length.toLocaleString()}개 검색됨`}
           </p>
         </div>
