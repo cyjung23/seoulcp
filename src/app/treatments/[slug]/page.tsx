@@ -12,7 +12,6 @@ async function getData(slug: string) {
 
   const treatmentName = decodeURIComponent(slug);
 
-  // 1) 표준 시술 조회
   const { data: standard } = await supabase
     .from("standard_treatments")
     .select("*")
@@ -21,7 +20,6 @@ async function getData(slug: string) {
 
   if (!standard) return null;
 
-  // 2) 이 표준 시술에 연결된 개별 시술들
   const { data: treatments } = await supabase
     .from("treatments")
     .select("id, name_ko, name_en")
@@ -34,7 +32,6 @@ async function getData(slug: string) {
     return { standard, treatments: [], clinics: [], concerns: [], bodyParts: [] };
   }
 
-  // 3) 클리닉 정보 (개별 시술별 가격 포함)
   const { data: clinicRows } = await supabase
     .from("clinic_treatments")
     .select(
@@ -42,7 +39,6 @@ async function getData(slug: string) {
     )
     .in("treatment_id", treatmentIds);
 
-  // 클리닉별로 그룹화 (같은 클리닉이 여러 개별 시술을 제공할 수 있음)
   const clinicMap = new Map<number, any>();
   (clinicRows || []).forEach((r: any) => {
     if (!r.clinics?.id) return;
@@ -61,7 +57,6 @@ async function getData(slug: string) {
     });
   });
 
-  // 4) 관련 고민
   const { data: concernRows } = await supabase
     .from("treatment_concerns")
     .select("concern_id, concerns(id, name_ko, name_en)")
@@ -72,7 +67,6 @@ async function getData(slug: string) {
     if (r.concerns?.id) concernMap.set(r.concerns.id, r.concerns);
   });
 
-  // 5) 관련 부위
   const { data: bodyPartRows } = await supabase
     .from("treatment_body_parts")
     .select("body_part_id, body_parts(id, name_ko, name_en)")
@@ -106,7 +100,7 @@ export default async function TreatmentDetailPage({
 
   return (
     <div className="min-h-screen">
-      <header className="bg-gray-900 text-white py-10 px-6">
+      <header className="bg-base-dark text-white py-10 px-6">
         <div className="max-w-5xl mx-auto">
           <Link
             href="/treatments"
@@ -123,7 +117,6 @@ export default async function TreatmentDetailPage({
       </header>
 
       <section className="max-w-5xl mx-auto py-8 px-6">
-        {/* 개별 시술 목록 */}
         {treatments.length > 0 && (
           <div className="mb-8">
             <h2 className="text-xl font-bold mb-3">
@@ -133,7 +126,7 @@ export default async function TreatmentDetailPage({
               {treatments.map((t) => (
                 <span
                   key={t.id}
-                  className="bg-blue-50 text-blue-700 px-3 py-1 rounded-full text-sm"
+                  className="bg-blue-50 text-ui-secondary px-3 py-1 rounded-full text-sm"
                 >
                   {t.name_ko}
                 </span>
@@ -142,7 +135,6 @@ export default async function TreatmentDetailPage({
           </div>
         )}
 
-        {/* 관련 부위 */}
         {bodyParts.length > 0 && (
           <div className="mb-8">
             <h2 className="text-xl font-bold mb-3">시술 부위</h2>
@@ -159,7 +151,6 @@ export default async function TreatmentDetailPage({
           </div>
         )}
 
-        {/* 관련 고민 */}
         {concerns.length > 0 && (
           <div className="mb-8">
             <h2 className="text-xl font-bold mb-3">관련 고민</h2>
@@ -168,7 +159,7 @@ export default async function TreatmentDetailPage({
                 <Link
                   key={c.id}
                   href={`/concerns/${encodeURIComponent(c.name_ko)}`}
-                  className="bg-red-50 text-red-700 px-3 py-1 rounded-full text-sm hover:bg-red-100"
+                  className="bg-pink-50 text-ui-primary px-3 py-1 rounded-full text-sm hover:bg-pink-100"
                 >
                   {c.name_ko}
                 </Link>
@@ -177,7 +168,6 @@ export default async function TreatmentDetailPage({
           </div>
         )}
 
-        {/* 시술 가능 클리닉 */}
         <h2 className="text-xl font-bold mb-4">
           시술 가능 클리닉 ({clinics.length})
         </h2>
@@ -186,7 +176,7 @@ export default async function TreatmentDetailPage({
             <Link
               key={c.id}
               href={`/clinics/${c.id}`}
-              className="border rounded-lg p-4 hover:shadow-md transition block"
+              className="border rounded-lg p-4 hover:shadow-md hover:border-ui-accent transition block"
             >
               <h3 className="font-bold text-lg">{c.name_ko}</h3>
               <p className="text-gray-500 text-sm">{c.name_en}</p>
@@ -196,14 +186,13 @@ export default async function TreatmentDetailPage({
               {c.phone && (
                 <p className="text-gray-600 text-sm mt-1">📞 {c.phone}</p>
               )}
-              {/* 이 클리닉의 개별 시술 및 가격 */}
               {c.treatments && c.treatments.length > 0 && (
                 <div className="mt-3 border-t pt-2">
                   {c.treatments.map((ct: any, idx: number) => (
                     <div key={idx} className="flex justify-between text-sm mt-1">
                       <span className="text-gray-700">{ct.name_ko}</span>
                       {ct.price_krw && (
-                        <span className="text-green-600 font-semibold">
+                        <span className="text-ui-accent font-semibold">
                           ₩{ct.price_krw.toLocaleString()}
                         </span>
                       )}

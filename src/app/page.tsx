@@ -103,14 +103,12 @@ async function getData() {
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
   );
 
-  // 전체 카운트
   const [clinics, devices, treatments] = await Promise.all([
     supabase.from("clinics").select("*", { count: "exact", head: true }),
     supabase.from("devices").select("*", { count: "exact", head: true }),
     supabase.from("treatments").select("*", { count: "exact", head: true }),
   ]);
 
-  // 카테고리별 concern 수
   const { data: concerns } = await supabase
     .from("concerns")
     .select("id, concern_group_ko");
@@ -139,18 +137,29 @@ export default async function Home() {
   return (
     <div className="min-h-screen">
       {/* 히어로 섹션 */}
-      <header className="bg-gray-900 text-white py-14 px-6 text-center">
-        <h1 className="text-3xl font-bold tracking-tight"><span className="text-[#22d3ee]">A</span><span>ll </span><span className="text-[#fb37a3]">B</span><span>eauty </span><span className="text-[#facc15]">C</span><span>linic </span><span className="text-[#a3e635]">Seoul</span></h1>
-        <p className="text-gray-400 mt-2 text-sm tracking-wide">서울 미용·피부·성형 클리닉 검색 플랫폼</p><p className="text-gray-300 mt-3 text-lg">
+      <header className="bg-base-dark text-white py-14 px-6 text-center">
+        <h1 className="text-3xl font-bold tracking-tight">
+          <span className="text-logo-s">S</span>
+          <span className="text-gray-300">eoul </span>
+          <span className="text-logo-b">B</span>
+          <span className="text-gray-300">eauty </span>
+          <span className="text-logo-c">C</span>
+          <span className="text-gray-300">ode</span>
+        </h1>
+        <p className="text-gray-400 mt-2 text-sm tracking-wide">
+          Crack the Code to Seoul&apos;s Beauty
+        </p>
+        <p className="text-gray-300 mt-3 text-lg">
           어떤 고민이 있으신가요?
         </p>
         <div className="mt-5 px-4">
           <SearchBar placeholder="고민, 시술, 장비, 클리닉을 검색하세요..." />
         </div>
-        <p className="text-gray-500 mt-4 text-sm">
-          {clinicCount} clinics · {deviceCount} devices · {treatmentCount}{" "}
-          treatments
-        </p>
+        <div className="flex justify-center gap-6 mt-5 text-sm">
+          <span className="text-ui-accent font-semibold">{clinicCount} Clinics</span>
+          <span className="text-ui-primary font-semibold">{treatmentCount} Treatments</span>
+          <span className="text-ui-secondary font-semibold">{deviceCount} Devices</span>
+        </div>
       </header>
 
       {/* 12 카테고리 그리드 */}
@@ -187,7 +196,7 @@ export default async function Home() {
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
           <Link
             href="/treatments"
-            className="border rounded-xl p-6 hover:shadow-lg transition block text-center"
+            className="border rounded-xl p-6 hover:shadow-lg hover:border-ui-primary transition block text-center"
           >
             <span className="text-3xl">💉</span>
             <h3 className="font-bold mt-3">시술</h3>
@@ -197,7 +206,7 @@ export default async function Home() {
           </Link>
           <Link
             href="/surgeries"
-            className="border rounded-xl p-6 hover:shadow-lg transition block text-center"
+            className="border rounded-xl p-6 hover:shadow-lg hover:border-ui-primary transition block text-center"
           >
             <span className="text-3xl">🔪</span>
             <h3 className="font-bold mt-3">수술</h3>
@@ -207,7 +216,7 @@ export default async function Home() {
           </Link>
           <Link
             href="/devices"
-            className="border rounded-xl p-6 hover:shadow-lg transition block text-center"
+            className="border rounded-xl p-6 hover:shadow-lg hover:border-ui-secondary transition block text-center"
           >
             <span className="text-3xl">🔬</span>
             <h3 className="font-bold mt-3">장비</h3>
@@ -217,7 +226,7 @@ export default async function Home() {
           </Link>
           <Link
             href="/clinics"
-            className="border rounded-xl p-6 hover:shadow-lg transition block text-center"
+            className="border rounded-xl p-6 hover:shadow-lg hover:border-ui-accent transition block text-center"
           >
             <span className="text-3xl">🏥</span>
             <h3 className="font-bold mt-3">클리닉</h3>

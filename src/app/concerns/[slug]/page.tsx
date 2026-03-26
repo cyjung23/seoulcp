@@ -20,7 +20,6 @@ async function getData(slug: string) {
 
   if (!concern) return null;
 
-  // 이 고민에 연결된 시술 목록
   const { data: treatmentRows } = await supabase
     .from("treatment_concerns")
     .select("treatment_id, treatments(id, name_ko, name_en, category_ko)")
@@ -30,7 +29,6 @@ async function getData(slug: string) {
     .map((r: any) => r.treatments)
     .filter(Boolean);
 
-  // 각 시술을 제공하는 클리닉 수
   const treatmentIds = treatments.map((t: any) => t.id);
 
   const { data: clinicRelations } = await supabase
@@ -43,7 +41,6 @@ async function getData(slug: string) {
     clinicCountMap[r.treatment_id] = (clinicCountMap[r.treatment_id] || 0) + 1;
   });
 
-  // 관련 클리닉 목록 (중복 제거)
   const uniqueClinicIds = [
     ...new Set((clinicRelations || []).map((r) => r.clinic_id)),
   ];
@@ -81,9 +78,8 @@ export default async function ConcernDetailPage({
 
   return (
     <div className="min-h-screen">
-      <header className="bg-gray-900 text-white py-10 px-6">
+      <header className="bg-base-dark text-white py-10 px-6">
         <div className="max-w-5xl mx-auto">
-          {/* 브레드크럼: Home → 카테고리 → 현재 고민 */}
           <div className="flex items-center gap-2 text-sm text-gray-400">
             <Link href="/" className="hover:text-white transition">
               Home
@@ -126,7 +122,6 @@ export default async function ConcernDetailPage({
       </header>
 
       <section className="max-w-5xl mx-auto py-8 px-6">
-        {/* 관련 시술 */}
         <h2 className="text-xl font-bold mb-4">
           관련 시술 ({treatments.length})
         </h2>
@@ -136,14 +131,14 @@ export default async function ConcernDetailPage({
               <Link
                 key={t.id}
                 href={`/treatments/${encodeURIComponent(t.name_ko)}`}
-                className="border rounded-lg p-4 hover:shadow-md transition block"
+                className="border rounded-lg p-4 hover:shadow-md hover:border-ui-secondary transition block"
               >
                 <h3 className="font-bold text-lg">{t.name_ko}</h3>
                 <p className="text-gray-500 text-sm">{t.name_en}</p>
                 <span className="inline-block bg-gray-100 text-gray-600 px-2 py-0.5 rounded text-xs mt-2">
                   {t.category_ko}
                 </span>
-                <p className="text-green-600 font-semibold mt-2">
+                <p className="text-ui-accent font-semibold mt-2">
                   {t.clinicCount} clinic{t.clinicCount !== 1 ? "s" : ""}
                 </p>
               </Link>
@@ -155,7 +150,6 @@ export default async function ConcernDetailPage({
           </p>
         )}
 
-        {/* 관련 클리닉 */}
         {clinics.length > 0 && (
           <>
             <h2 className="text-xl font-bold mb-4">
@@ -166,7 +160,7 @@ export default async function ConcernDetailPage({
                 <Link
                   key={c.id}
                   href={`/clinics/${c.id}`}
-                  className="border rounded-lg p-4 hover:shadow-md transition block"
+                  className="border rounded-lg p-4 hover:shadow-md hover:border-ui-accent transition block"
                 >
                   <h3 className="font-bold text-lg">{c.name_ko}</h3>
                   <p className="text-gray-500 text-sm">{c.name_en}</p>

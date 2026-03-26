@@ -66,7 +66,6 @@ async function getData(id: number) {
     .select("id, name_ko, name_en, title_ko")
     .eq("clinic_id", id);
 
-  // clinic_specialties 조회
   const { data: clinicSpecs } = await supabase
     .from("clinic_specialties")
     .select("specialty_ko")
@@ -113,7 +112,7 @@ export default async function ClinicDetailPage({
 
   return (
     <div className="min-h-screen">
-      <header className="bg-gray-900 text-white py-10 px-6">
+      <header className="bg-base-dark text-white py-10 px-6">
         <div className="max-w-5xl mx-auto">
           <Link
             href="/clinics"
@@ -127,7 +126,6 @@ export default async function ClinicDetailPage({
       </header>
 
       <section className="max-w-5xl mx-auto py-8 px-6">
-        {/* 기본 정보 + clinic specialties */}
         <div className="border rounded-xl p-6 mb-8">
           <h2 className="text-xl font-bold mb-4">기본 정보</h2>
           {clinic.address_ko && (
@@ -144,7 +142,7 @@ export default async function ClinicDetailPage({
               href={clinic.website}
               target="_blank"
               rel="noopener noreferrer"
-              className="text-blue-600 hover:underline"
+              className="text-ui-secondary hover:underline"
             >
               🔗 {clinic.website}
             </a>
@@ -155,7 +153,7 @@ export default async function ClinicDetailPage({
               {specialties.map((spec: string, i: number) => (
                 <span
                   key={i}
-                  className="bg-blue-50 text-blue-700 px-3 py-1 rounded-full text-sm font-medium"
+                  className="bg-pink-50 text-ui-primary px-3 py-1 rounded-full text-sm font-medium"
                 >
                   {spec}
                 </span>
@@ -164,7 +162,6 @@ export default async function ClinicDetailPage({
           )}
         </div>
 
-        {/* 시술 목록 */}
         {treatments.length > 0 && (
           <div className="mb-8">
             <h2 className="text-xl font-bold mb-4">
@@ -189,7 +186,7 @@ export default async function ClinicDetailPage({
                             ? `/treatments/${encodeURIComponent(t.standard_name_ko)}`
                             : "#"
                         }
-                        className="bg-green-50 text-green-700 px-3 py-1 rounded-full text-sm hover:bg-green-100"
+                        className="bg-green-50 text-ui-accent px-3 py-1 rounded-full text-sm hover:bg-green-100"
                       >
                         {t.name_ko}
                         {t.price_krw && (
@@ -205,7 +202,6 @@ export default async function ClinicDetailPage({
           </div>
         )}
 
-        {/* 장비 */}
         {devices.length > 0 && (
           <div className="mb-8">
             <h2 className="text-xl font-bold mb-4">
@@ -221,7 +217,7 @@ export default async function ClinicDetailPage({
                       <Link
                         key={d.id}
                         href={`/devices/${encodeURIComponent(d.device_name_ko)}`}
-                        className="bg-blue-50 text-blue-700 px-3 py-1 rounded-full text-sm hover:bg-blue-100"
+                        className="bg-blue-50 text-ui-secondary px-3 py-1 rounded-full text-sm hover:bg-blue-100"
                       >
                         {d.device_name_ko}
                       </Link>
@@ -232,7 +228,6 @@ export default async function ClinicDetailPage({
           </div>
         )}
 
-        {/* 의료진 */}
         {doctors.length > 0 && (
           <div className="mb-8">
             <h2 className="text-xl font-bold mb-4">
@@ -243,7 +238,7 @@ export default async function ClinicDetailPage({
                 <div key={doc.id} className="border rounded-lg p-4">
                   <p className="font-bold">{doc.name_ko}</p>
                   <p className="text-gray-500 text-sm">{doc.name_en}</p>
-                  <p className="text-blue-600 text-sm mt-1">{doc.title_ko}</p>
+                  <p className="text-ui-secondary text-sm mt-1">{doc.title_ko}</p>
                 </div>
               ))}
             </div>

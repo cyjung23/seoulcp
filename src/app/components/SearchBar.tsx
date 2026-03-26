@@ -31,11 +31,11 @@ export default function SearchBar({
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           placeholder={placeholder}
-          className="w-full px-5 py-3.5 pr-14 rounded-xl border border-gray-300 bg-white text-gray-900 text-base shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent placeholder:text-gray-400"
+          className="w-full px-5 py-3.5 pr-14 rounded-xl border border-gray-300 bg-white text-gray-900 text-base shadow-sm focus:outline-none focus:ring-2 focus:ring-ui-secondary focus:border-transparent placeholder:text-gray-400"
         />
         <button
           type="submit"
-          className="absolute right-2 top-1/2 -translate-y-1/2 bg-gray-900 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-gray-700 transition"
+          className="absolute right-2 top-1/2 -translate-y-1/2 bg-ui-primary text-white px-4 py-2 rounded-lg text-sm font-medium hover:opacity-90 transition"
         >
           검색
         </button>

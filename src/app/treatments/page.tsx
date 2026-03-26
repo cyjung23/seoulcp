@@ -102,15 +102,15 @@ export default async function TreatmentsPage() {
       <Link
         key={std.id}
         href={`/treatments/${encodeURIComponent(std.name_ko)}`}
-        className="border rounded-lg p-4 hover:shadow-md transition block"
+        className="border rounded-lg p-4 hover:shadow-md hover:border-ui-primary transition block"
       >
         <h3 className="font-bold text-lg">{std.name_ko}</h3>
         <p className="text-gray-500 text-sm">{std.name_en}</p>
         <div className="mt-2 flex gap-3 text-sm">
-          <span className="text-green-600 font-semibold">
+          <span className="text-ui-accent font-semibold">
             🏥 {clinics}개 클리닉
           </span>
-          <span className="text-blue-600 font-semibold">
+          <span className="text-ui-secondary font-semibold">
             💉 {treatmentVariants}개 시술
           </span>
         </div>
@@ -120,7 +120,7 @@ export default async function TreatmentsPage() {
 
   return (
     <div className="min-h-screen">
-      <header className="bg-gray-900 text-white py-10 px-6">
+      <header className="bg-base-dark text-white py-10 px-6">
         <div className="max-w-5xl mx-auto">
           <Link href="/" className="text-gray-400 hover:text-white text-sm">
             ← Home

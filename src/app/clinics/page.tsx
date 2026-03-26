@@ -9,19 +9,16 @@ async function getData() {
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
   );
 
-  // 클리닉
   const { data: clinics } = await supabase
     .from("clinics")
     .select("*")
     .order("name_ko");
 
-  // 표준 시술
   const { data: standards } = await supabase
     .from("standard_treatments")
     .select("id, name_ko, category_ko, category_order")
     .order("category_order");
 
-  // 카테고리 목록
   const categorySet = new Map<string, number>();
   (standards || []).forEach((s: any) => {
     if (!categorySet.has(s.category_ko)) {
@@ -30,17 +27,14 @@ async function getData() {
   });
   const categoryNames = Array.from(categorySet.keys());
 
-  // 시술 목록
   const { data: allTreatments } = await supabase
     .from("treatments")
     .select("id, name_ko, standard_treatment_id");
 
-  // 클리닉-시술 매핑
   const { data: allClinicTreatments } = await supabase
     .from("clinic_treatments")
     .select("clinic_id, treatment_id");
 
-  // treatment id → standard_treatment_id
   const treatmentToStdId: Record<number, string> = {};
   const treatmentToName: Record<number, string> = {};
   (allTreatments || []).forEach((t: any) => {
@@ -50,13 +44,11 @@ async function getData() {
     }
   });
 
-  // standard_treatment id → category
   const stdIdToCategory: Record<string, string> = {};
   (standards || []).forEach((s: any) => {
     stdIdToCategory[s.id] = s.category_ko;
   });
 
-  // 카테고리 필터용 매핑
   const categoryMap: Record<string, Set<number>> = {};
   (allClinicTreatments || []).forEach((ct: any) => {
     const stdId = treatmentToStdId[ct.treatment_id];
@@ -69,13 +61,11 @@ async function getData() {
     }
   });
 
-  // 카테고리별 보유 클리닉 수 (희소성 정렬용)
   const categoryClinicCount: Record<string, number> = {};
   Object.entries(categoryMap).forEach(([cat, clinicSet]) => {
     categoryClinicCount[cat] = clinicSet.size;
   });
 
-  // clinic_specialties
   const { data: clinicSpecs } = await supabase
     .from("clinic_specialties")
     .select("clinic_id, specialty_ko");
@@ -88,7 +78,6 @@ async function getData() {
     }
   });
 
-  // 희소성 기준 정렬
   Object.keys(clinicSpecMap).forEach((cid) => {
     clinicSpecMap[Number(cid)].sort((a, b) => {
       const countA = categoryClinicCount[a] || 999;
@@ -97,7 +86,6 @@ async function getData() {
     });
   });
 
-  // 클리닉별 개별 시술명 목록
   const clinicTreatmentNames: Record<number, string[]> = {};
   (allClinicTreatments || []).forEach((ct: any) => {
     const name = treatmentToName[ct.treatment_id];
@@ -109,14 +97,12 @@ async function getData() {
     }
   });
 
-  // 클리닉 정보 조합
   const clinicsWithInfo = (clinics || []).map((c: any) => ({
     ...c,
     specialties: clinicSpecMap[c.id] || [],
     treatmentNames: (clinicTreatmentNames[c.id] || []).sort(),
   }));
 
-  // 지역 필터
   const districtSet = new Set<string>();
   (clinics || []).forEach((c: any) => {
     if (c.district_ko) districtSet.add(c.district_ko.split(" ")[0]);
@@ -190,7 +176,7 @@ export default async function ClinicsPage({
 
   return (
     <div className="min-h-screen">
-      <header className="bg-gray-900 text-white py-10 px-6">
+      <header className="bg-base-dark text-white py-10 px-6">
         <div className="max-w-5xl mx-auto">
           <Link href="/" className="text-gray-400 hover:text-white text-sm">
             ← Home
@@ -212,8 +198,8 @@ export default async function ClinicsPage({
                 href={clearUrl("district")}
                 className={`px-3 py-1.5 rounded-full text-sm font-medium border transition ${
                   selectedDistricts.length === 0
-                    ? "bg-gray-900 text-white border-gray-900"
-                    : "bg-white text-gray-600 border-gray-300 hover:border-gray-500"
+                    ? "bg-ui-primary text-white border-ui-primary"
+                    : "bg-white text-gray-600 border-gray-300 hover:border-ui-primary"
                 }`}
               >
                 전체
@@ -224,8 +210,8 @@ export default async function ClinicsPage({
                   href={toggleUrl("district", d, selectedDistricts)}
                   className={`px-3 py-1.5 rounded-full text-sm font-medium border transition ${
                     selectedDistricts.includes(d)
-                      ? "bg-gray-900 text-white border-gray-900"
-                      : "bg-white text-gray-600 border-gray-300 hover:border-gray-500"
+                      ? "bg-ui-primary text-white border-ui-primary"
+                      : "bg-white text-gray-600 border-gray-300 hover:border-ui-primary"
                   }`}
                 >
                   {d}
@@ -241,8 +227,8 @@ export default async function ClinicsPage({
                 href={clearUrl("category")}
                 className={`px-3 py-1.5 rounded-full text-sm font-medium border transition ${
                   selectedCategories.length === 0
-                    ? "bg-gray-900 text-white border-gray-900"
-                    : "bg-white text-gray-600 border-gray-300 hover:border-gray-500"
+                    ? "bg-ui-secondary text-white border-ui-secondary"
+                    : "bg-white text-gray-600 border-gray-300 hover:border-ui-secondary"
                 }`}
               >
                 전체
@@ -253,8 +239,8 @@ export default async function ClinicsPage({
                   href={toggleUrl("category", cat, selectedCategories)}
                   className={`px-3 py-1.5 rounded-full text-sm font-medium border transition ${
                     selectedCategories.includes(cat)
-                      ? "bg-gray-900 text-white border-gray-900"
-                      : "bg-white text-gray-600 border-gray-300 hover:border-gray-500"
+                      ? "bg-ui-secondary text-white border-ui-secondary"
+                      : "bg-white text-gray-600 border-gray-300 hover:border-ui-secondary"
                   }`}
                 >
                   {cat}
@@ -285,7 +271,7 @@ export default async function ClinicsPage({
               ))}
               <Link
                 href="/clinics"
-                className="text-sm text-red-500 hover:text-red-700 underline ml-2"
+                className="text-sm text-ui-primary hover:opacity-80 underline ml-2"
               >
                 모든 필터 초기화
               </Link>
@@ -306,8 +292,8 @@ export default async function ClinicsPage({
               );
 
               const allTags = [
-                ...greenTags.map((t: string) => ({ text: t, color: "blue" })),
-                ...blueTags.map((t: string) => ({ text: t, color: "green" })),
+                ...greenTags.map((t: string) => ({ text: t, color: "primary" })),
+                ...blueTags.map((t: string) => ({ text: t, color: "accent" })),
               ];
 
               let charCount = 0;
@@ -338,9 +324,9 @@ export default async function ClinicsPage({
                         <span
                           key={i}
                           className={
-                            tag.color === "blue"
-                              ? "bg-blue-50 text-blue-700 px-2.5 py-0.5 rounded-full text-xs font-medium"
-                              : "bg-green-50 text-green-700 px-2.5 py-0.5 rounded-full text-xs font-medium"
+                            tag.color === "primary"
+                              ? "bg-pink-50 text-ui-primary px-2.5 py-0.5 rounded-full text-xs font-medium"
+                              : "bg-green-50 text-ui-accent px-2.5 py-0.5 rounded-full text-xs font-medium"
                           }
                         >
                           {tag.text}

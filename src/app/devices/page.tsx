@@ -37,7 +37,7 @@ export default async function DevicesPage() {
 
   return (
     <div className="min-h-screen">
-      <header className="bg-gray-900 text-white py-10 px-6">
+      <header className="bg-base-dark text-white py-10 px-6">
         <div className="max-w-5xl mx-auto">
           <Link href="/" className="text-gray-400 hover:text-white text-sm">
             ← Home
@@ -58,11 +58,11 @@ export default async function DevicesPage() {
                   <Link
                     key={d.id}
                     href={`/devices/${encodeURIComponent(d.device_name_ko)}`}
-                    className="border rounded-lg p-4 hover:shadow-md transition block"
+                    className="border rounded-lg p-4 hover:shadow-md hover:border-ui-secondary transition block"
                   >
                     <h3 className="font-bold text-lg">{d.device_name_ko}</h3>
                     <p className="text-gray-500 text-sm">{d.device_name_en}</p>
-                    <p className="text-blue-600 font-semibold mt-2">
+                    <p className="text-ui-secondary font-semibold mt-2">
                       {d.clinicCount} clinic{d.clinicCount > 1 ? "s" : ""}
                     </p>
                   </Link>

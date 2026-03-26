@@ -3,9 +3,6 @@ import { createClient } from "@supabase/supabase-js";
 
 export const dynamic = "force-dynamic";
 
-/* ────────────────────────────────────────────
-   12 카테고리 순서 & 메타 (page.tsx와 동일)
-   ──────────────────────────────────────────── */
 const CATEGORY_ORDER = [
   { ko: "주름·탄력", en: "Wrinkles & Firmness", icon: "✨" },
   { ko: "얼굴윤곽·볼륨", en: "Face Shape & Volume", icon: "💎" },
@@ -21,9 +18,6 @@ const CATEGORY_ORDER = [
   { ko: "기타고민", en: "Other Concerns", icon: "📋" },
 ];
 
-/* ────────────────────────────────────────────
-   데이터 로드
-   ──────────────────────────────────────────── */
 async function getData() {
   const supabase = createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -50,9 +44,6 @@ async function getData() {
   }));
 }
 
-/* ────────────────────────────────────────────
-   페이지 렌더링
-   ──────────────────────────────────────────── */
 export default async function ConcernsPage({
   searchParams,
 }: {
@@ -61,7 +52,6 @@ export default async function ConcernsPage({
   const { category } = await searchParams;
   const allConcerns = await getData();
 
-  // 카테고리별 그룹핑
   const grouped: Record<string, typeof allConcerns> = {};
   allConcerns.forEach((c) => {
     const key = c.concern_group_ko || "기타고민";
@@ -69,7 +59,6 @@ export default async function ConcernsPage({
     grouped[key].push(c);
   });
 
-  // 선택된 카테고리가 있으면 해당 카테고리만, 없으면 전체
   const selectedCategory = category ? decodeURIComponent(category) : null;
 
   const displayCategories = selectedCategory
@@ -82,7 +71,7 @@ export default async function ConcernsPage({
 
   return (
     <div className="min-h-screen">
-      <header className="bg-gray-900 text-white py-10 px-6">
+      <header className="bg-base-dark text-white py-10 px-6">
         <div className="max-w-6xl mx-auto">
           <Link href="/" className="text-gray-400 hover:text-white text-sm">
             ← Home
@@ -102,14 +91,13 @@ export default async function ConcernsPage({
       </header>
 
       <section className="max-w-6xl mx-auto py-8 px-6">
-        {/* 카테고리 탭 */}
         <div className="flex flex-wrap gap-2 mb-8">
           <Link
             href="/concerns"
             className={`px-3 py-1.5 rounded-full text-sm font-medium border transition ${
               !selectedCategory
-                ? "bg-gray-900 text-white border-gray-900"
-                : "bg-white text-gray-600 border-gray-300 hover:border-gray-500"
+                ? "bg-ui-primary text-white border-ui-primary"
+                : "bg-white text-gray-600 border-gray-300 hover:border-ui-primary"
             }`}
           >
             전체
@@ -123,8 +111,8 @@ export default async function ConcernsPage({
                 href={`/concerns?category=${encodeURIComponent(cat.ko)}`}
                 className={`px-3 py-1.5 rounded-full text-sm font-medium border transition ${
                   isActive
-                    ? "bg-gray-900 text-white border-gray-900"
-                    : "bg-white text-gray-600 border-gray-300 hover:border-gray-500"
+                    ? "bg-ui-primary text-white border-ui-primary"
+                    : "bg-white text-gray-600 border-gray-300 hover:border-ui-primary"
                 }`}
               >
                 {cat.icon} {cat.ko}
@@ -134,7 +122,6 @@ export default async function ConcernsPage({
           })}
         </div>
 
-        {/* 카테고리별 고민 목록 */}
         {displayCategories.map((cat) => {
           const items = grouped[cat.ko] || [];
           if (items.length === 0) return null;
@@ -155,11 +142,11 @@ export default async function ConcernsPage({
                   <Link
                     key={c.id}
                     href={`/concerns/${encodeURIComponent(c.name_ko)}`}
-                    className="border rounded-lg p-4 hover:shadow-md transition block"
+                    className="border rounded-lg p-4 hover:shadow-md hover:border-ui-primary transition block"
                   >
                     <h3 className="font-bold text-lg">{c.name_ko}</h3>
                     <p className="text-gray-500 text-sm">{c.name_en}</p>
-                    <p className="text-red-600 font-semibold mt-2">
+                    <p className="text-ui-primary font-semibold mt-2">
                       {c.treatmentCount} treatment
                       {c.treatmentCount !== 1 ? "s" : ""}
                     </p>
@@ -170,7 +157,6 @@ export default async function ConcernsPage({
           );
         })}
 
-        {/* 선택 카테고리에 항목이 없는 경우 */}
         {selectedCategory && (grouped[selectedCategory] || []).length === 0 && (
           <p className="text-gray-500 text-center py-12">
             해당 카테고리에 등록된 고민이 없습니다.

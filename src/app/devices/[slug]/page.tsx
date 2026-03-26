@@ -45,7 +45,7 @@ export default async function DeviceDetailPage({
 
   return (
     <div className="min-h-screen">
-      <header className="bg-gray-900 text-white py-10 px-6">
+      <header className="bg-base-dark text-white py-10 px-6">
         <div className="max-w-5xl mx-auto">
           <Link href="/devices" className="text-gray-400 hover:text-white text-sm">
             ← 장비 목록
@@ -74,7 +74,7 @@ export default async function DeviceDetailPage({
             <Link
               key={c.id}
               href={`/clinics/${c.id}`}
-              className="border rounded-lg p-4 hover:shadow-md transition block"
+              className="border rounded-lg p-4 hover:shadow-md hover:border-ui-accent transition block"
             >
               <h3 className="font-bold text-lg">{c.name_ko}</h3>
               <p className="text-gray-500 text-sm">{c.name_en}</p>

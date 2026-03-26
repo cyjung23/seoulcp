@@ -9,6 +9,20 @@
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --font-sans: var(--font-noto-sans-kr);
+
+  /* Brand: Logo 고채도 */
+  --color-logo-s: #7ED321;
+  --color-logo-b: #FF1493;
+  --color-logo-c: #00D2FF;
+
+  /* Brand: UI 저채도 */
+  --color-ui-primary: #D4237A;
+  --color-ui-secondary: #0A9DC2;
+  --color-ui-accent: #5CA80E;
+
+  /* Brand: Base */
+  --color-base-dark: #1E272E;
+  --color-base-light: #F5F6FA;
 }
 
 body {
