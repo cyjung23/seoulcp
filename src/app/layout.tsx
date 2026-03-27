@@ -13,29 +13,29 @@ const notoSansKR = Noto_Sans_KR({
 
 export const metadata: Metadata = {
   title: {
-    default: "SeoulBC – 서울 미용·피부·성형 클리닉 검색 플랫폼",
-    template: "%s | SeoulBC",
+    default: "Seoul Clinic Pick — 서울 미용클리닉 검색 플랫폼",
+    template: "%s | Seoul Clinic Pick",
   },
   description:
-    "서울 미용클리닉의 시술, 장비, 의사 정보를 고민별로 검색하세요. Seoul Beauty Code – 주름, 체형, 색소, 브랜드별 피부·성형 고민별 클리닉을 찾아드립니다.",
+    "서울 미용클리닉의 시술, 장비, 의사 정보를 한눈에 비교하고 검색하세요. Seoul Clinic Pick — 주름, 체형, 장소, 브랜드까지 클리닉 비교 검색 플랫폼에서 나에게 맞는 클리닉을 찾아드립니다.",
   keywords: [
     "서울 미용클리닉",
-    "피부과",
+    "클리닉픽",
     "성형외과",
     "미용시술",
-    "피부고민",
+    "클리닉비교",
     "Seoul beauty clinic",
     "Korean aesthetic clinic",
     "K-beauty clinic",
-    "Seoul Beauty Code",
-    "SeoulBC",
+    "Seoul Clinic Pick",
+    "SeoulCP",
   ],
   openGraph: {
-    title: "SeoulBC – 서울 미용·피부·성형 클리닉 검색 플랫폼",
+    title: "Seoul Clinic Pick — 서울 미용클리닉 검색 플랫폼",
     description:
-      "고민별로 서울 미용클리닉, 시술, 장비를 검색하세요. Seoul Beauty Code.",
-    url: "https://seoulbc.vercel.app",
-    siteName: "SeoulBC",
+      "한눈에 서울 미용클리닉의 시술, 장비를 비교 검색하세요. Seoul Clinic Pick.",
+    url: "https://seoulcp.com",
+    siteName: "Seoul Clinic Pick",
     locale: "ko_KR",
     type: "website",
   },
@@ -43,7 +43,7 @@ export const metadata: Metadata = {
     index: false,
     follow: false,
   },
-  metadataBase: new URL("https://seoulbc.vercel.app"),
+  metadataBase: new URL("https://seoulcp.com"),
 };
 
 export default function RootLayout({
@@ -66,10 +66,10 @@ export default function RootLayout({
               <Link href="/" className="text-[15px] font-bold tracking-tight flex-shrink-0">
                 <span className="text-logo-s">S</span>
                 <span className="text-gray-400">eoul </span>
-                <span className="text-logo-b">B</span>
-                <span className="text-gray-400">eauty </span>
-                <span className="text-logo-c">C</span>
-                <span className="text-gray-400">ode</span>
+                <span className="text-logo-b">C</span>
+                <span className="text-gray-400">linic </span>
+                <span className="text-logo-c">P</span>
+                <span className="text-gray-400">ick</span>
               </Link>
 
               {/* 데스크톱 메뉴 (md 이상) */}
@@ -91,7 +91,7 @@ export default function RootLayout({
                 </Link>
               </div>
 
-              {/* 모바일 햄버거 (md 미만) */}
+              {/* 모바일 햄버거(md 미만) */}
               <NavMobileMenu />
             </div>
 
@@ -110,7 +110,7 @@ export default function RootLayout({
         {/* 푸터 */}
         <footer className="bg-gray-50 border-t text-gray-500 text-xs py-6 px-6">
           <div className="max-w-7xl mx-auto text-center">
-            © 2026 SeoulBC. 서울 미용·피부·성형 클리닉 검색 플랫폼
+            © 2026 Seoul Clinic Pick. 서울 미용클리닉 검색 플랫폼
           </div>
         </footer>
       </body>
