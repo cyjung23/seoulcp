@@ -61,11 +61,6 @@ async function getData(id: number) {
     })
     .filter(Boolean);
 
-  const { data: doctors } = await supabase
-    .from("doctors")
-    .select("id, name_ko, name_en, title_ko")
-    .eq("clinic_id", id);
-
   const { data: clinicSpecs } = await supabase
     .from("clinic_specialties")
     .select("specialty_ko")
@@ -77,7 +72,6 @@ async function getData(id: number) {
     clinic,
     devices: (deviceRows || []).map((r: any) => r.devices).filter(Boolean),
     treatments,
-    doctors: doctors || [],
     specialties,
   };
 }
@@ -92,7 +86,7 @@ export default async function ClinicDetailPage({
 
   if (!data) return notFound();
 
-  const { clinic, devices, treatments, doctors, specialties } = data;
+  const { clinic, devices, treatments, specialties } = data;
 
   const deviceCategories = [
     ...new Set(devices.map((d: any) => d.category_ko || "기타")),
@@ -152,7 +146,7 @@ export default async function ClinicDetailPage({
               href={clinic.website}
               target="_blank"
               rel="noopener noreferrer"
-              className="text-ui-secondary hover:underline text-sm"
+              className="text-cat-clinic hover:underline text-sm"
             >
               🔗 {clinic.website}
             </a>
@@ -163,7 +157,7 @@ export default async function ClinicDetailPage({
               {specialties.map((spec: string, i: number) => (
                 <span
                   key={i}
-                  className="bg-blue-50 text-ui-primary px-2.5 sm:px-3 py-0.5 sm:py-1 rounded-full text-xs sm:text-sm font-medium"
+                  className="bg-tag-device-bg text-cat-device px-2.5 sm:px-3 py-0.5 sm:py-1 rounded-full text-xs sm:text-sm font-medium"
                 >
                   {spec}
                 </span>
@@ -200,7 +194,7 @@ export default async function ClinicDetailPage({
                               )}`
                             : "#"
                         }
-                        className="bg-green-50 text-ui-accent px-2.5 sm:px-3 py-0.5 sm:py-1 rounded-full text-xs sm:text-sm hover:bg-green-100"
+                        className="bg-tag-treat-bg text-cat-treat px-2.5 sm:px-3 py-0.5 sm:py-1 rounded-full text-xs sm:text-sm hover:opacity-80"
                       >
                         {t.name_ko}
                         {t.price_krw && (
@@ -235,7 +229,7 @@ export default async function ClinicDetailPage({
                         href={`/devices/${encodeURIComponent(
                           d.device_name_ko
                         )}`}
-                        className="bg-blue-50 text-ui-secondary px-2.5 sm:px-3 py-0.5 sm:py-1 rounded-full text-xs sm:text-sm hover:bg-blue-100"
+                        className="bg-tag-device-bg text-cat-device px-2.5 sm:px-3 py-0.5 sm:py-1 rounded-full text-xs sm:text-sm hover:opacity-80"
                       >
                         {d.device_name_ko}
                       </Link>
@@ -243,29 +237,6 @@ export default async function ClinicDetailPage({
                 </div>
               </div>
             ))}
-          </div>
-        )}
-
-        {doctors.length > 0 && (
-          <div className="mb-6 sm:mb-8">
-            <h2 className="text-lg sm:text-xl font-bold mb-3 sm:mb-4">
-              👨‍⚕️ 의료진 ({doctors.length})
-            </h2>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
-              {doctors.map((doc: any) => (
-                <div key={doc.id} className="border rounded-lg p-3 sm:p-4">
-                  <p className="font-bold text-sm sm:text-base">
-                    {doc.name_ko}
-                  </p>
-                  <p className="text-gray-500 text-xs sm:text-sm">
-                    {doc.name_en}
-                  </p>
-                  <p className="text-ui-secondary text-xs sm:text-sm mt-1">
-                    {doc.title_ko}
-                  </p>
-                </div>
-              ))}
-            </div>
           </div>
         )}
       </section>
