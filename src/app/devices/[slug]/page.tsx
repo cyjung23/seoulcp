@@ -74,7 +74,7 @@ export default async function DeviceDetailPage({
             <Link
               key={c.id}
               href={`/clinics/${c.id}`}
-              className="border rounded-lg p-4 hover:shadow-md hover:border-ui-accent transition block"
+              className="border rounded-lg p-4 hover:shadow-md hover:border-cat-clinic transition block"
             >
               <h3 className="font-bold text-lg">{c.name_ko}</h3>
               <p className="text-gray-500 text-sm">{c.name_en}</p>

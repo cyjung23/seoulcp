@@ -128,7 +128,7 @@ export default async function TreatmentDetailPage({
               {treatments.map((t) => (
                 <span
                   key={t.id}
-                  className="bg-blue-50 text-ui-secondary px-3 py-1 rounded-full text-xs sm:text-sm"
+                  className="bg-blue-50 text-cat-treat px-3 py-1 rounded-full text-xs sm:text-sm"
                 >
                   {t.name_ko}
                 </span>
@@ -161,7 +161,7 @@ export default async function TreatmentDetailPage({
                 <Link
                   key={c.id}
                   href={`/concerns/${encodeURIComponent(c.name_ko)}`}
-                  className="bg-blue-50 text-ui-primary px-3 py-1 rounded-full text-xs sm:text-sm hover:bg-blue-100"
+                  className="bg-pink-50 text-cat-concern px-3 py-1 rounded-full text-xs sm:text-sm hover:bg-pink-100"
                 >
                   {c.name_ko}
                 </Link>
@@ -178,7 +178,7 @@ export default async function TreatmentDetailPage({
             <Link
               key={c.id}
               href={`/clinics/${c.id}`}
-              className="border rounded-lg p-3 sm:p-4 hover:shadow-md hover:border-ui-accent transition block"
+              className="border rounded-lg p-3 sm:p-4 hover:shadow-md hover:border-cat-clinic transition block"
             >
               <h3 className="font-bold text-base sm:text-lg">{c.name_ko}</h3>
               <p className="text-gray-500 text-xs sm:text-sm">{c.name_en}</p>
@@ -194,7 +194,7 @@ export default async function TreatmentDetailPage({
                     <div key={idx} className="flex justify-between text-xs sm:text-sm mt-1">
                       <span className="text-gray-700">{ct.name_ko}</span>
                       {ct.price_krw && (
-                        <span className="text-ui-accent font-semibold">
+                        <span className="text-cat-clinic font-semibold">
                           ₩{ct.price_krw.toLocaleString()}
                         </span>
                       )}

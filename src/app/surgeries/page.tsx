@@ -114,13 +114,13 @@ export default async function SurgeriesPage() {
                     <Link
                       key={std.id}
                       href={`/treatments/${encodeURIComponent(std.name_ko)}`}
-                      className="border rounded-lg p-3 sm:p-4 hover:shadow-md hover:border-ui-primary transition block"
+                      className="border rounded-lg p-3 sm:p-4 hover:shadow-md hover:border-cat-surgery transition block"
                     >
                       <h3 className="font-bold text-base sm:text-lg">{std.name_ko}</h3>
                       <p className="text-gray-500 text-xs sm:text-sm">{std.name_en}</p>
                       <div className="mt-1.5 sm:mt-2 text-sm">
                         {clinics > 0 ? (
-                          <span className="text-ui-accent font-semibold">
+                          <span className="text-cat-clinic font-semibold">
                             🏥 {clinics}개 클리닉
                           </span>
                         ) : (

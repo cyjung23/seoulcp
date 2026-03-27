@@ -51,13 +51,11 @@ export default function ClinicsPage() {
   // ── 초기 로딩: 총 수, 구별 수, 카테고리 목록 ──
   useEffect(() => {
     async function loadInit() {
-      // 1. 총 클리닉 수
       const { count } = await supabase
         .from("clinics")
         .select("*", { count: "exact", head: true });
       setTotalCount(count ?? 0);
 
-      // 2. 구별 수 (페이지네이션)
       const allDistricts: { district_ko: string }[] = [];
       let from = 0;
       while (true) {
@@ -80,7 +78,6 @@ export default function ClinicsPage() {
       });
       setDistrictCounts(dc);
 
-      // 3. 카테고리 목록
       const { data: standards } = await supabase
         .from("standard_treatments")
         .select("id, name_ko, category_ko, category_order")
@@ -99,7 +96,6 @@ export default function ClinicsPage() {
       setTreatmentCategories(tCats);
       setSurgeryCategories(sCats);
 
-      // 4. 카테고리→클리닉 매핑
       const { data: allTreatments } = await supabase
         .from("treatments")
         .select("id, standard_treatment_id")
@@ -151,7 +147,6 @@ export default function ClinicsPage() {
     loadInit();
   }, []);
 
-  // ── 필터 변경 시 클리닉 조회 ──
   const hasAnyFilter =
     selectedDistricts.length > 0 ||
     selectedTreatments.length > 0 ||
@@ -167,7 +162,6 @@ export default function ClinicsPage() {
     async function fetchClinics() {
       setLoading(true);
 
-      // 1. 구 필터 적용하여 클리닉 조회
       let allResults: any[] = [];
       let from = 0;
 
@@ -186,7 +180,6 @@ export default function ClinicsPage() {
           from += 1000;
         }
       } else {
-        // 구 미선택 → 전체에서 카테고리 필터만
         while (true) {
           const { data } = await supabase
             .from("clinics")
@@ -200,7 +193,6 @@ export default function ClinicsPage() {
         }
       }
 
-      // 2. 카테고리 필터 적용
       const selectedCats = [...selectedTreatments, ...selectedSurgeries];
       if (selectedCats.length > 0) {
         const sets = selectedCats
@@ -213,14 +205,12 @@ export default function ClinicsPage() {
         }
       }
 
-      // 3. 전문분야 + 시술명 로드
       const clinicIds = allResults.map((c) => c.id);
 
       let specialtiesData: any[] = [];
       let treatmentsData: any[] = [];
 
       if (clinicIds.length > 0) {
-        // 배치로 분할 (in 쿼리 제한)
         const batchSize = 200;
         for (let i = 0; i < clinicIds.length; i += batchSize) {
           const batch = clinicIds.slice(i, i + batchSize);
@@ -234,7 +224,6 @@ export default function ClinicsPage() {
         }
       }
 
-      // 시술명 매핑
       const treatmentIds = [...new Set(treatmentsData.map((t: any) => t.treatment_id))];
       const treatmentNameMap: Record<number, string> = {};
       if (treatmentIds.length > 0) {
@@ -273,7 +262,6 @@ export default function ClinicsPage() {
     fetchClinics();
   }, [initLoaded, selectedDistricts, selectedTreatments, selectedSurgeries, categoryClinicMap, hasAnyFilter]);
 
-  // ── 토글 함수 ──
   const toggleDistrict = useCallback((d: string) => {
     setSelectedDistricts((prev) => prev.includes(d) ? prev.filter((v) => v !== d) : [...prev, d]);
   }, []);
@@ -289,7 +277,6 @@ export default function ClinicsPage() {
     setSelectedSurgeries([]);
   }, []);
 
-  // ── 렌더링 ──
   return (
     <div className="min-h-screen">
       <header className="bg-base-dark text-white py-3 px-4 sm:px-6">
@@ -320,8 +307,8 @@ export default function ClinicsPage() {
                   onClick={() => toggleTreatment(cat)}
                   className={`px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-full text-xs sm:text-sm font-medium border transition ${
                     selectedTreatments.includes(cat)
-                      ? "bg-ui-secondary text-white border-ui-secondary"
-                      : "bg-white text-gray-600 border-gray-300 hover:border-ui-secondary"
+                      ? "bg-cat-treat text-white border-cat-treat"
+                      : "bg-white text-gray-600 border-gray-300 hover:border-cat-treat"
                   }`}
                 >
                   {cat}
@@ -340,8 +327,8 @@ export default function ClinicsPage() {
                   onClick={() => toggleSurgery(cat)}
                   className={`px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-full text-xs sm:text-sm font-medium border transition ${
                     selectedSurgeries.includes(cat)
-                      ? "bg-purple-600 text-white border-purple-600"
-                      : "bg-white text-gray-600 border-gray-300 hover:border-purple-400"
+                      ? "bg-cat-surgery text-white border-cat-surgery"
+                      : "bg-white text-gray-600 border-gray-300 hover:border-cat-surgery"
                   }`}
                 >
                   {cat}
@@ -360,12 +347,12 @@ export default function ClinicsPage() {
                   onClick={() => toggleDistrict(d)}
                   className={`px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-full text-xs sm:text-sm font-medium border transition ${
                     selectedDistricts.includes(d)
-                      ? "bg-ui-primary text-white border-ui-primary"
-                      : "bg-white text-gray-600 border-gray-300 hover:border-ui-primary"
+                      ? "bg-cat-clinic text-white border-cat-clinic"
+                      : "bg-white text-gray-600 border-gray-300 hover:border-cat-clinic"
                   }`}
                 >
                   {d}
-                  <span className={`ml-1 ${selectedDistricts.includes(d) ? "text-blue-200" : "text-gray-400"}`}>
+                  <span className={`ml-1 ${selectedDistricts.includes(d) ? "text-green-200" : "text-gray-400"}`}>
                     {districtCounts[d]?.toLocaleString() ?? ""}
                   </span>
                 </button>
@@ -381,30 +368,30 @@ export default function ClinicsPage() {
                 <button
                   key={`t-${cat}`}
                   onClick={() => toggleTreatment(cat)}
-                  className="inline-flex items-center gap-1 px-2 sm:px-2.5 py-0.5 sm:py-1 bg-teal-50 text-teal-700 rounded-full text-xs hover:bg-teal-100"
+                  className="inline-flex items-center gap-1 px-2 sm:px-2.5 py-0.5 sm:py-1 bg-tag-treat-bg text-cat-treat rounded-full text-xs hover:opacity-80"
                 >
-                  🔹 {cat} <span className="text-teal-400">✕</span>
+                  🔹 {cat} <span className="opacity-50">✕</span>
                 </button>
               ))}
               {selectedSurgeries.map((cat) => (
                 <button
                   key={`s-${cat}`}
                   onClick={() => toggleSurgery(cat)}
-                  className="inline-flex items-center gap-1 px-2 sm:px-2.5 py-0.5 sm:py-1 bg-purple-50 text-purple-700 rounded-full text-xs hover:bg-purple-100"
+                  className="inline-flex items-center gap-1 px-2 sm:px-2.5 py-0.5 sm:py-1 bg-tag-surgery-bg text-cat-surgery rounded-full text-xs hover:opacity-80"
                 >
-                  🔸 {cat} <span className="text-purple-400">✕</span>
+                  🔸 {cat} <span className="opacity-50">✕</span>
                 </button>
               ))}
               {selectedDistricts.map((d) => (
                 <button
                   key={`d-${d}`}
                   onClick={() => toggleDistrict(d)}
-                  className="inline-flex items-center gap-1 px-2 sm:px-2.5 py-0.5 sm:py-1 bg-blue-50 text-blue-700 rounded-full text-xs hover:bg-blue-100"
+                  className="inline-flex items-center gap-1 px-2 sm:px-2.5 py-0.5 sm:py-1 bg-tag-clinic-bg text-cat-clinic rounded-full text-xs hover:opacity-80"
                 >
-                  📍 {d} <span className="text-blue-400">✕</span>
+                  📍 {d} <span className="opacity-50">✕</span>
                 </button>
               ))}
-              <button onClick={clearAll} className="text-xs sm:text-sm text-ui-primary hover:opacity-80 underline ml-2">
+              <button onClick={clearAll} className="text-xs sm:text-sm text-cat-concern hover:opacity-80 underline ml-2">
                 초기화
               </button>
             </div>
@@ -424,7 +411,7 @@ export default function ClinicsPage() {
           </div>
         ) : loading ? (
           <div className="text-center py-16 sm:py-24">
-            <div className="inline-block w-8 h-8 border-4 border-ui-primary border-t-transparent rounded-full animate-spin mb-4" />
+            <div className="inline-block w-8 h-8 border-4 border-cat-concern border-t-transparent rounded-full animate-spin mb-4" />
             <p className="text-gray-500 text-base">검색 중...</p>
           </div>
         ) : clinics.length === 0 ? (
@@ -438,8 +425,8 @@ export default function ClinicsPage() {
               const blueTags = c.treatmentNames.filter((name) => !greenTags.includes(name));
 
               const allTags = [
-                ...greenTags.map((t) => ({ text: t, color: "primary" })),
-                ...blueTags.map((t) => ({ text: t, color: "accent" })),
+                ...greenTags.map((t) => ({ text: t, color: "specialty" })),
+                ...blueTags.map((t) => ({ text: t, color: "treatment" })),
               ];
 
               let charCount = 0;
@@ -473,9 +460,9 @@ export default function ClinicsPage() {
                         <span
                           key={i}
                           className={
-                            tag.color === "primary"
-                              ? "bg-blue-50 text-ui-primary px-2 sm:px-2.5 py-0.5 rounded-full text-[10px] sm:text-xs font-medium"
-                              : "bg-green-50 text-ui-accent px-2 sm:px-2.5 py-0.5 rounded-full text-[10px] sm:text-xs font-medium"
+                            tag.color === "specialty"
+                              ? "bg-tag-device-bg text-cat-device px-2 sm:px-2.5 py-0.5 rounded-full text-[10px] sm:text-xs font-medium"
+                              : "bg-tag-treat-bg text-cat-treat px-2 sm:px-2.5 py-0.5 rounded-full text-[10px] sm:text-xs font-medium"
                           }
                         >
                           {tag.text}

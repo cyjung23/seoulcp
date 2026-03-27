@@ -58,11 +58,11 @@ export default async function DevicesPage() {
                   <Link
                     key={d.id}
                     href={`/devices/${encodeURIComponent(d.device_name_ko)}`}
-                    className="border rounded-lg p-3 sm:p-4 hover:shadow-md hover:border-ui-secondary transition block"
+                    className="border rounded-lg p-3 sm:p-4 hover:shadow-md hover:border-cat-device transition block"
                   >
                     <h3 className="font-bold text-base sm:text-lg">{d.device_name_ko}</h3>
                     <p className="text-gray-500 text-xs sm:text-sm">{d.device_name_en}</p>
-                    <p className="text-ui-secondary font-semibold mt-1.5 sm:mt-2 text-sm">
+                    <p className="text-cat-device font-semibold mt-1.5 sm:mt-2 text-sm">
                       {d.clinicCount} clinic{d.clinicCount > 1 ? "s" : ""}
                     </p>
                   </Link>

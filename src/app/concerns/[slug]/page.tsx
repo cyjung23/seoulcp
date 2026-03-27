@@ -131,14 +131,14 @@ export default async function ConcernDetailPage({
               <Link
                 key={t.id}
                 href={`/treatments/${encodeURIComponent(t.name_ko)}`}
-                className="border rounded-lg p-3 sm:p-4 hover:shadow-md hover:border-ui-secondary transition block"
+                className="border rounded-lg p-3 sm:p-4 hover:shadow-md hover:border-cat-treat transition block"
               >
                 <h3 className="font-bold text-base sm:text-lg">{t.name_ko}</h3>
                 <p className="text-gray-500 text-xs sm:text-sm">{t.name_en}</p>
                 <span className="inline-block bg-gray-100 text-gray-600 px-2 py-0.5 rounded text-xs mt-2">
                   {t.category_ko}
                 </span>
-                <p className="text-ui-accent font-semibold mt-1.5 sm:mt-2 text-sm">
+                <p className="text-cat-clinic font-semibold mt-1.5 sm:mt-2 text-sm">
                   {t.clinicCount} clinic{t.clinicCount !== 1 ? "s" : ""}
                 </p>
               </Link>
@@ -160,7 +160,7 @@ export default async function ConcernDetailPage({
                 <Link
                   key={c.id}
                   href={`/clinics/${c.id}`}
-                  className="border rounded-lg p-3 sm:p-4 hover:shadow-md hover:border-ui-accent transition block"
+                  className="border rounded-lg p-3 sm:p-4 hover:shadow-md hover:border-cat-clinic transition block"
                 >
                   <h3 className="font-bold text-base sm:text-lg">{c.name_ko}</h3>
                   <p className="text-gray-500 text-xs sm:text-sm">{c.name_en}</p>

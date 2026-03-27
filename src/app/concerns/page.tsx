@@ -96,8 +96,8 @@ export default async function ConcernsPage({
             href="/concerns"
             className={`px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-full text-xs sm:text-sm font-medium border transition ${
               !selectedCategory
-                ? "bg-ui-primary text-white border-ui-primary"
-                : "bg-white text-gray-600 border-gray-300 hover:border-ui-primary"
+                ? "bg-cat-concern text-white border-cat-concern"
+                : "bg-white text-gray-600 border-gray-300 hover:border-cat-concern"
             }`}
           >
             전체
@@ -111,8 +111,8 @@ export default async function ConcernsPage({
                 href={`/concerns?category=${encodeURIComponent(cat.ko)}`}
                 className={`px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-full text-xs sm:text-sm font-medium border transition ${
                   isActive
-                    ? "bg-ui-primary text-white border-ui-primary"
-                    : "bg-white text-gray-600 border-gray-300 hover:border-ui-primary"
+                    ? "bg-cat-concern text-white border-cat-concern"
+                    : "bg-white text-gray-600 border-gray-300 hover:border-cat-concern"
                 }`}
               >
                 {cat.icon} {cat.ko}
@@ -142,11 +142,11 @@ export default async function ConcernsPage({
                   <Link
                     key={c.id}
                     href={`/concerns/${encodeURIComponent(c.name_ko)}`}
-                    className="border rounded-lg p-3 sm:p-4 hover:shadow-md hover:border-ui-primary transition block"
+                    className="border rounded-lg p-3 sm:p-4 hover:shadow-md hover:border-cat-concern transition block"
                   >
                     <h3 className="font-bold text-base sm:text-lg">{c.name_ko}</h3>
                     <p className="text-gray-500 text-xs sm:text-sm">{c.name_en}</p>
-                    <p className="text-ui-primary font-semibold mt-1.5 sm:mt-2 text-sm">
+                    <p className="text-cat-concern font-semibold mt-1.5 sm:mt-2 text-sm">
                       {c.treatmentCount} treatment
                       {c.treatmentCount !== 1 ? "s" : ""}
                     </p>

@@ -5,17 +5,17 @@ export const dynamic = "force-dynamic";
 
 const CATEGORIES = [
   { id: 1, ko: "주름/탄력", en: "Wrinkles & Firmness", icon: "✨", color: "bg-rose-50 text-rose-700 border-rose-200" },
-  { id: 2, ko: "얼굴윤곽/볼륨", en: "Face Shape & Volume", icon: "💎", color: "bg-purple-50 text-purple-700 border-purple-200" },
+  { id: 2, ko: "얼굴형태/볼륨", en: "Face Shape & Volume", icon: "💎", color: "bg-purple-50 text-purple-700 border-purple-200" },
   { id: 3, ko: "체형/지방", en: "Body Contouring & Fat", icon: "🏋️", color: "bg-orange-50 text-orange-700 border-orange-200" },
   { id: 4, ko: "색소/피부톤", en: "Pigmentation & Skin Tone", icon: "🎨", color: "bg-amber-50 text-amber-700 border-amber-200" },
-  { id: 5, ko: "점/사마귀 제거", en: "Spot & Wart Removal", icon: "🔍", color: "bg-yellow-50 text-yellow-700 border-yellow-200" },
+  { id: 5, ko: "점사마귀 제거", en: "Spot & Wart Removal", icon: "🔍", color: "bg-yellow-50 text-yellow-700 border-yellow-200" },
   { id: 6, ko: "여드름/모공/피지", en: "Acne, Pores & Sebum", icon: "🧴", color: "bg-lime-50 text-lime-700 border-lime-200" },
-  { id: 7, ko: "피부회복/안티에이징", en: "Skin Rejuvenation & Anti-Aging", icon: "🌿", color: "bg-emerald-50 text-emerald-700 border-emerald-200" },
+  { id: 7, ko: "피부재생/안티에이징", en: "Skin Rejuvenation & Anti-Aging", icon: "🌿", color: "bg-emerald-50 text-emerald-700 border-emerald-200" },
   { id: 8, ko: "홍조/혈관", en: "Redness & Vessels", icon: "❤️‍🔥", color: "bg-red-50 text-red-700 border-red-200" },
   { id: 9, ko: "탈모/두피", en: "Hair Loss & Scalp", icon: "💇", color: "bg-sky-50 text-sky-700 border-sky-200" },
   { id: 10, ko: "흉터", en: "Scars", icon: "🩹", color: "bg-teal-50 text-teal-700 border-teal-200" },
   { id: 11, ko: "부작용/재시술", en: "Complications & Correction", icon: "🔄", color: "bg-indigo-50 text-indigo-700 border-indigo-200" },
-  { id: 12, ko: "기타고민", en: "Other Concerns", icon: "📋", color: "bg-gray-50 text-gray-700 border-gray-200" },
+  { id: 12, ko: "기타고민", en: "Other Concerns", icon: "💡", color: "bg-gray-50 text-gray-700 border-gray-200" },
 ];
 
 async function getData() {
@@ -88,7 +88,7 @@ export default async function Home() {
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4">
           <Link
             href="/treatments"
-            className="border rounded-xl p-4 sm:p-6 hover:shadow-lg hover:border-ui-primary transition block text-center"
+            className="border rounded-xl p-4 sm:p-6 hover:shadow-lg hover:border-cat-treat transition block text-center"
           >
             <span className="text-2xl sm:text-3xl">💉</span>
             <h3 className="font-bold mt-2 sm:mt-3 text-sm sm:text-base">시술</h3>
@@ -98,17 +98,17 @@ export default async function Home() {
           </Link>
           <Link
             href="/surgeries"
-            className="border rounded-xl p-4 sm:p-6 hover:shadow-lg hover:border-ui-primary transition block text-center"
+            className="border rounded-xl p-4 sm:p-6 hover:shadow-lg hover:border-cat-surgery transition block text-center"
           >
-            <span className="text-2xl sm:text-3xl">🔪</span>
+            <span className="text-2xl sm:text-3xl">🏥</span>
             <h3 className="font-bold mt-2 sm:mt-3 text-sm sm:text-base">수술</h3>
             <p className="text-gray-500 text-xs sm:text-sm mt-1">
-              성형/지방 수술 정보
+              체형/지방 수술 정보
             </p>
           </Link>
           <Link
             href="/devices"
-            className="border rounded-xl p-4 sm:p-6 hover:shadow-lg hover:border-ui-secondary transition block text-center"
+            className="border rounded-xl p-4 sm:p-6 hover:shadow-lg hover:border-cat-device transition block text-center"
           >
             <span className="text-2xl sm:text-3xl">🔬</span>
             <h3 className="font-bold mt-2 sm:mt-3 text-sm sm:text-base">장비</h3>
@@ -118,9 +118,9 @@ export default async function Home() {
           </Link>
           <Link
             href="/clinics"
-            className="border rounded-xl p-4 sm:p-6 hover:shadow-lg hover:border-ui-accent transition block text-center"
+            className="border rounded-xl p-4 sm:p-6 hover:shadow-lg hover:border-cat-clinic transition block text-center"
           >
-            <span className="text-2xl sm:text-3xl">🏥</span>
+            <span className="text-2xl sm:text-3xl">🏪</span>
             <h3 className="font-bold mt-2 sm:mt-3 text-sm sm:text-base">클리닉</h3>
             <p className="text-gray-500 text-xs sm:text-sm mt-1">
               서울 {clinicCount}개 클리닉

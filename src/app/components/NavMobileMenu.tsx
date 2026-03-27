@@ -5,11 +5,11 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 
 const MENU_ITEMS = [
-  { href: "/concerns", label: "고민", icon: "💬" },
-  { href: "/treatments", label: "시술", icon: "💉" },
-  { href: "/surgeries", label: "수술", icon: "🔪" },
-  { href: "/devices", label: "장비", icon: "🔬" },
-  { href: "/clinics", label: "클리닉", icon: "🏥" },
+  { href: "/concerns", label: "고민", icon: "💬", activeClass: "text-cat-concern" },
+  { href: "/treatments", label: "시술", icon: "💉", activeClass: "text-cat-treat" },
+  { href: "/surgeries", label: "수술", icon: "🔪", activeClass: "text-cat-surgery" },
+  { href: "/devices", label: "장비", icon: "🔬", activeClass: "text-cat-device" },
+  { href: "/clinics", label: "클리닉", icon: "🏥", activeClass: "text-cat-clinic" },
 ];
 
 export default function NavMobileMenu() {
@@ -38,7 +38,7 @@ export default function NavMobileMenu() {
                 onClick={() => setIsOpen(false)}
                 className={`flex items-center gap-3 py-3 px-2 text-sm font-medium border-b border-gray-800 last:border-b-0 transition
                   ${pathname.startsWith(item.href)
-                    ? "text-ui-primary"
+                    ? item.activeClass
                     : "text-gray-300 hover:text-white hover:bg-white/5"
                   }`}
               >

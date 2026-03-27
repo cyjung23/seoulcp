@@ -59,15 +59,17 @@ function SectionHeader({
   icon,
   title,
   count,
+  colorClass,
 }: {
   icon: string;
   title: string;
   count: number;
+  colorClass: string;
 }) {
   return (
-    <div className="flex items-center gap-2 mb-4 border-b pb-2">
+    <div className={`flex items-center gap-2 mb-4 border-b pb-2`}>
       <span className="text-xl">{icon}</span>
-      <h2 className="text-xl font-bold">{title}</h2>
+      <h2 className={`text-xl font-bold ${colorClass}`}>{title}</h2>
       <span className="text-sm text-gray-400 ml-auto">{count}건</span>
     </div>
   );
@@ -164,13 +166,14 @@ export default async function SearchPage({
               icon="🔍"
               title="고민"
               count={results.concerns.length}
+              colorClass="text-cat-concern"
             />
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {results.concerns.map((c: any) => (
                 <Link
                   key={c.id}
                   href={`/concerns/${encodeURIComponent(c.name_ko)}`}
-                  className="border rounded-lg p-4 hover:shadow-md transition block"
+                  className="border rounded-lg p-4 hover:shadow-md hover:border-cat-concern transition block"
                 >
                   <h3 className="font-bold text-lg">
                     <Highlight text={c.name_ko} query={query} />
@@ -196,13 +199,14 @@ export default async function SearchPage({
               icon="💉"
               title="시술"
               count={results.treatments.length}
+              colorClass="text-cat-treat"
             />
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {results.treatments.map((t: any) => (
                 <Link
                   key={t.id}
                   href={`/treatments/${encodeURIComponent(t.name_ko)}`}
-                  className="border rounded-lg p-4 hover:shadow-md transition block"
+                  className="border rounded-lg p-4 hover:shadow-md hover:border-cat-treat transition block"
                 >
                   <h3 className="font-bold text-lg">
                     <Highlight text={t.name_ko} query={query} />
@@ -228,13 +232,14 @@ export default async function SearchPage({
               icon="🔬"
               title="장비"
               count={results.devices.length}
+              colorClass="text-cat-device"
             />
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {results.devices.map((d: any) => (
                 <Link
                   key={d.id}
                   href={`/devices/${encodeURIComponent(d.device_name_ko)}`}
-                  className="border rounded-lg p-4 hover:shadow-md transition block"
+                  className="border rounded-lg p-4 hover:shadow-md hover:border-cat-device transition block"
                 >
                   <h3 className="font-bold text-lg">
                     <Highlight text={d.device_name_ko} query={query} />
@@ -267,13 +272,14 @@ export default async function SearchPage({
               icon="🏥"
               title="클리닉"
               count={results.clinics.length}
+              colorClass="text-cat-clinic"
             />
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {results.clinics.map((c: any) => (
                 <Link
                   key={c.id}
                   href={`/clinics/${c.id}`}
-                  className="border rounded-lg p-4 hover:shadow-md transition block"
+                  className="border rounded-lg p-4 hover:shadow-md hover:border-cat-clinic transition block"
                 >
                   <h3 className="font-bold text-lg">
                     <Highlight text={c.name_ko} query={query} />
