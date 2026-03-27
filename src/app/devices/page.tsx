@@ -43,7 +43,7 @@ export default async function DevicesPage() {
             ← Home
           </Link>
           <h1 className="text-xl sm:text-2xl font-bold mt-1">장비 / Devices</h1>
-          <p className="text-gray-400 text-xs sm:text-sm mt-0.5">{devices.length}개 장비</p>
+          <p className="text-gray-400 text-xs sm:text-sm mt-0.5">{categories.length}개 카테고리 · {devices.length}개 장비</p>
         </div>
       </header>
 
