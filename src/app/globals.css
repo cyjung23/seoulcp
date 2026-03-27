@@ -10,19 +10,30 @@
   --color-foreground: var(--foreground);
   --font-sans: var(--font-noto-sans-kr);
 
-  /* Brand: Logo 고채도 */
-  --color-logo-s: #7ED321;
-  --color-logo-b: #FF1493;
-  --color-logo-c: #00D2FF;
+  /* ═══ Brand: Logo 고채도 ═══ */
+  --color-logo-s: #4AE0FF;   /* Seoul · 시안 */
+  --color-logo-c: #FF5CAE;   /* Clinic · 핑크 */
+  --color-logo-p: #A0E85A;   /* Pick · 연두 */
 
-  /* Brand: UI 저채도 */
-  --color-ui-primary: #506DBD;
-  --color-ui-secondary: #0A9DC2;
-  --color-ui-accent: #5CA80E;
+  /* ═══ Brand: 카테고리 UI 5색 ═══ */
+  --color-cat-concern:  #0A9DC2;  /* 고민 · 시안 */
+  --color-cat-treat:    #0E99B8;  /* 시술 · 밝은시안 */
+  --color-cat-surgery:  #1D5C78;  /* 수술 · 딥틸 */
+  --color-cat-device:   #506DBD;  /* 장비 · 퍼플블루 */
+  --color-cat-clinic:   #5CA80E;  /* 클리닉 · 그린 */
 
-  /* Brand: Base */
-  --color-base-dark: #1E272E;
+  /* ═══ Brand: 태그 배경 5색 ═══ */
+  --color-tag-concern-bg:  #FDE8EE;  /* 연핑크 */
+  --color-tag-treat-bg:    #DEF2F6;  /* 밝은시안 */
+  --color-tag-surgery-bg:  #DAE6EC;  /* 진한시안 */
+  --color-tag-device-bg:   #ECEDF2;  /* 뉴트럴그레이 */
+  --color-tag-clinic-bg:   #E8F5E9;  /* 연그린 */
+
+  /* ═══ Brand: Base ═══ */
+  --color-base-dark:  #1E272E;
   --color-base-light: #F5F6FA;
+  --color-base-text:  #333333;
+  --color-base-sub:   #888888;
 }
 
 body {
