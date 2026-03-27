@@ -1,4 +1,4 @@
-@import "tailwindcss";
+﻿@import "tailwindcss";
 
 :root {
   --background: #ffffff;
@@ -41,3 +41,5 @@ body {
   color: var(--foreground);
   font-family: var(--font-noto-sans-kr), "Noto Sans KR", sans-serif;
 }
+
+
