@@ -62,31 +62,31 @@ export default function RootLayout({
           <div className="max-w-7xl mx-auto px-4">
             {/* 1행: 로고 + 데스크톱 메뉴 + 모바일 햄버거 */}
             <div className="flex items-center justify-between h-11">
-              {/* 로고 */}
+              {/* 로고 — 변경: logo-s / logo-c / logo-p */}
               <Link href="/" className="text-[15px] font-bold tracking-tight flex-shrink-0">
                 <span className="text-logo-s">S</span>
                 <span className="text-gray-400">eoul </span>
-                <span className="text-logo-b">C</span>
+                <span className="text-logo-c">C</span>
                 <span className="text-gray-400">linic </span>
-                <span className="text-logo-c">P</span>
+                <span className="text-logo-p">P</span>
                 <span className="text-gray-400">ick</span>
               </Link>
 
               {/* 데스크톱 메뉴 (md 이상) */}
               <div className="hidden md:flex items-center gap-6 text-sm font-medium">
-                <Link href="/concerns" className="text-gray-300 hover:text-ui-primary transition whitespace-nowrap">
+                <Link href="/concerns" className="text-gray-300 hover:text-cat-concern transition whitespace-nowrap">
                   고민
                 </Link>
-                <Link href="/treatments" className="text-gray-300 hover:text-ui-primary transition whitespace-nowrap">
+                <Link href="/treatments" className="text-gray-300 hover:text-cat-treat transition whitespace-nowrap">
                   시술
                 </Link>
-                <Link href="/surgeries" className="text-gray-300 hover:text-ui-primary transition whitespace-nowrap">
+                <Link href="/surgeries" className="text-gray-300 hover:text-cat-surgery transition whitespace-nowrap">
                   수술
                 </Link>
-                <Link href="/devices" className="text-gray-300 hover:text-ui-primary transition whitespace-nowrap">
+                <Link href="/devices" className="text-gray-300 hover:text-cat-device transition whitespace-nowrap">
                   장비
                 </Link>
-                <Link href="/clinics" className="text-gray-300 hover:text-ui-primary transition whitespace-nowrap">
+                <Link href="/clinics" className="text-gray-300 hover:text-cat-clinic transition whitespace-nowrap">
                   클리닉
                 </Link>
               </div>
