@@ -9,8 +9,8 @@ const MENU_ITEMS = [
   { href: "/treatments", label: "시술", icon: "💉", activeClass: "text-cat-treat" },
   { href: "/surgeries", label: "수술", icon: "🔪", activeClass: "text-cat-surgery" },
   { href: "/devices", label: "장비", icon: "🔬", activeClass: "text-cat-device" },
-  { href: "/wiki", label: "백과", icon: "📖", activeClass: "text-cat-treat" },  // ← 추가
   { href: "/clinics", label: "클리닉", icon: "🏥", activeClass: "text-cat-clinic" },
+  { href: "/wiki", label: "백과", icon: "📖", activeClass: "text-cat-treat" },
 ];
 
 export default function NavMobileMenu() {
