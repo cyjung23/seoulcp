@@ -73,23 +73,28 @@ export default function RootLayout({
               </Link>
 
               {/* 데스크톱 메뉴 (md 이상) */}
-              <div className="hidden md:flex items-center gap-6 text-sm font-medium">
-                <Link href="/concerns" className="text-gray-300 hover:text-cat-concern transition whitespace-nowrap">
-                  고민
-                </Link>
-                <Link href="/treatments" className="text-gray-300 hover:text-cat-treat transition whitespace-nowrap">
-                  시술
-                </Link>
-                <Link href="/surgeries" className="text-gray-300 hover:text-cat-surgery transition whitespace-nowrap">
-                  수술
-                </Link>
-                <Link href="/devices" className="text-gray-300 hover:text-cat-device transition whitespace-nowrap">
-                  장비
-                </Link>
-                <Link href="/clinics" className="text-gray-300 hover:text-cat-clinic transition whitespace-nowrap">
-                  클리닉
-                </Link>
-              </div>
+<div className="hidden md:flex items-center gap-6 text-sm font-medium">
+  <Link href="/concerns" className="text-gray-300 hover:text-cat-concern transition whitespace-nowrap">
+    고민
+  </Link>
+  <Link href="/treatments" className="text-gray-300 hover:text-cat-treat transition whitespace-nowrap">
+    시술
+  </Link>
+  <Link href="/surgeries" className="text-gray-300 hover:text-cat-surgery transition whitespace-nowrap">
+    수술
+  </Link>
+  <Link href="/devices" className="text-gray-300 hover:text-cat-device transition whitespace-nowrap">
+    장비
+  </Link>
+  {/* ▼ 추가 */}
+  <Link href="/wiki" className="text-gray-300 hover:text-cat-treat transition whitespace-nowrap">
+    백과
+  </Link>
+  {/* ▲ 추가 */}
+  <Link href="/clinics" className="text-gray-300 hover:text-cat-clinic transition whitespace-nowrap">
+    클리닉
+  </Link>
+</div>
 
               {/* 모바일 햄버거(md 미만) */}
               <NavMobileMenu />
